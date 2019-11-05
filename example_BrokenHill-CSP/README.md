@@ -15,21 +15,21 @@ The overall structure of the assignment:
 6. Quantify potential improvements and possible drawbacks of your scenario compared to the reference case using simplified sustainability assessments in a life cycle perspective.
 7. Present the results in a technical paper.
 
-__Reference case__ is how your investigated area and system looks today. The reference case is limited by various system boundaries, including geographical boundaries and system functions. A reference case can be e.g. “Tomato production in Tarragona 2018” or “Private heating of apartment buildings in east Berlin 2017”
+## 2, Reference Case
+
+The reference case is how your investigated area and system looks today. The reference case is limited by various system boundaries, including geographical boundaries and system functions. A reference case can be e.g. “Tomato production in Tarragona 2018” or “Private heating of apartment buildings in east Berlin 2017”
 
 - Electricity generation in NSW 2019
 
-__Solution__
+## 3, Scenario
 
-- CSP power generation and storage in Broken Hill
-
-__Scenario__ is a future version of the system described in the reference case. The scenario should be more sustainable than the reference case and should describe the most desirable future for this system that you can think of. The temporal scope of the scenario is an important parameter and should be included as an essential part of the study. For example, a scenario could be “Sustainable tomato production in Tarragona 2035”, “Private heating of apartment buildings in east Berlin 2050 using sustainable energy sources”, etc.
+The scenario is a future version of the system described in the reference case. The scenario should be more sustainable than the reference case and should describe the most desirable future for this system that you can think of. The temporal scope of the scenario is an important parameter and should be included as an essential part of the study. For example, a scenario could be “Sustainable tomato production in Tarragona 2035”, “Private heating of apartment buildings in east Berlin 2050 using sustainable energy sources”, etc.
 
 - Electricity generation in NSW in 2030
 
-## 2, Solution: CSP power generation and storage in Broken Hill
+## 4, Solution: CSP power generation and storage in Broken Hill
 
-### 2.1, Principles of CSP - How it will work
+### 4.1, Principles of CSP - How it will work
 
 PE Foam with lots of bubble inside.
 
@@ -48,44 +48,3 @@ Use the existing heavy vehicles and facilities.
 reduce the vortex of water flowing in and out.
 
 The inlet and outlet flows have a huge impact.
-
-## 3, Simulation of Operation
-
-### 3.1, Energy Consumption and Price
-
-The main advantage of solar thermal generation is that the peak hours of generation and consumption are highly correlated and matched. The thermal inertia is high, so the short-term fluctuations can be mitigated. Besides, the large-scale storage facility can be used for daily thermal storage.
-
-<https://www.aemo.com.au/Electricity/National-Electricity-Market-NEM/Data-dashboard>
-
-<https://opennem.org.au/energy/nsw1/>
-
-Assume to be price taker
-
-### 3.2, Solar Radiation
-
-<https://www.renewables.ninja>
-
-- Average solar source
-- factors showing the move of the sun
-
-### 3.3, Daily Long-Term Storage
-
-static strategy without prediction
-
-based on static calculation of
-
-sell + store
-
-store the heat for use during night, and generate equally during night.
-
-## 4, Static Control Policy and Statistics
-
-decision variables: generation size, and storage size, charging ratio
-
-### 4.1, Simulation Result as Timeline
-
-1. 20 years plot showing the benefits
-
-2. carbon emission trade
-
-### 4.2, Training Set and Validation Set
