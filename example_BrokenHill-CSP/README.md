@@ -19,17 +19,15 @@ The overall structure of the assignment:
 
 The reference case is how your investigated area and system looks today. The reference case is limited by various system boundaries, including geographical boundaries and system functions. A reference case can be e.g. “Tomato production in Tarragona 2018” or “Private heating of apartment buildings in east Berlin 2017”
 
-- Electricity generation in NSW 2019
+- Electricity Generation in NSW 2019
 
 ## 3, Scenario
 
 The scenario is a future version of the system described in the reference case. The scenario should be more sustainable than the reference case and should describe the most desirable future for this system that you can think of. The temporal scope of the scenario is an important parameter and should be included as an essential part of the study. For example, a scenario could be “Sustainable tomato production in Tarragona 2035”, “Private heating of apartment buildings in east Berlin 2050 using sustainable energy sources”, etc.
 
-- Electricity generation in NSW in 2030
+- NSW Zero-Coal Electricity System in 2030
 
 ## 4, Solution: CSP power generation and storage in Broken Hill
-
-### 4.1, Principles of CSP - How it will work
 
 PE Foam with lots of bubble inside.
 
