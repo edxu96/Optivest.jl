@@ -29,6 +29,11 @@ The scenario is a future version of the system described in the reference case. 
 
 ## 4, Solution: CSP power generation and storage in Broken Hill
 
+
+![Figure 1, options for Thermal Energy Storage in Solar Power Production. \[1\]](../images/1.png)
+
+![](../images/2.png)
+
 PE Foam with lots of bubble inside.
 
 leca-stone
@@ -39,10 +44,24 @@ Floating insulation layer: The cover boards are floating on the surface.
 
 Construct a dam using the soil taken from the pit.
 
-It requires a lot of water, but we don't need water in this project.
-
-Use the existing heavy vehicles and facilities.
-
 reduce the vortex of water flowing in and out.
 
 The inlet and outlet flows have a huge impact.
+
+### Technical Advantages
+
+- To use petroleum oil instead of water as the working fluid. Lower the burden of water supply in Australia.
+- Existing heavy vehicles and facilities from the mining industry can be used.
+- The pits caused by mining can be used as the storage pits.
+
+### Pit Thermal Storage
+
+![](../images/3.png)
+
+### Organic Rankine Cycle
+
+![](../images/4.png)
+
+## 5, References
+
+1. de Winter, F. 1990. Solar Collectors, Energy Storage, and Materials, MIT Press, Cambridge MA. With permission.
