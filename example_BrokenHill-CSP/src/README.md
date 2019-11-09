@@ -17,7 +17,7 @@ Assume to be price taker
 
 <https://www.renewables.ninja>
 
-- Average solar source
+- Average solar source 
 - factors showing the move of the sun
 
 ### 1.3, Daily Long-Term Storage
@@ -42,4 +42,4 @@ decision variables: generation size, and storage size, charging ratio
 
 ### 2.2, Training Set and Validation Set
 
-The data about electricity price in January to June in NSW in 2014 and the data about solar thermal generation has been used to 
+The data about electricity price in January to June in NSW in 2014 and the data about solar thermal generation has been used to

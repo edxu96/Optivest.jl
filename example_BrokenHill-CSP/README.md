@@ -54,13 +54,6 @@ The inlet and outlet flows have a huge impact.
 - Existing heavy vehicles and facilities from the mining industry can be used.
 - The pits caused by mining can be used as the storage pits.
 
-### Pit Thermal Storage
-
-![](../images/3.png)
-
-### Organic Rankine Cycle
-
-![](../images/4.png)
 
 ## 5, References
 

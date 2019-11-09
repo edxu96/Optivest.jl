@@ -1,88 +1,19 @@
 
+# Introduction to CSP and Thermal Storage
 
-# Assignment: Poster for Broken Hill
 
-## 1, Requirements
+We have found that there are many open pits left from the minning industry, which is shown in figure 1. The pits have caused lots of damage to the local environment, and all the land reclamation projects are failed becaused of the high cost.
 
-In the poster challenge, the main goal is to define and visualize a future scenario proposing a more desirable future for your reference case with respect to the selected key criteria.
+![Figure 1, satellite image of open pits left from mining industry in Broken Hill, NSW.](https://lh3.googleusercontent.com/ugE3Onrmmb1tYbTwdohKDrbQDKRF2M_ijR_Biq-bAaAALBrk5kRADB8EDLgOHrWE0-RqTcaabAA)
 
-visualize and present your future scenario and quantify
-differences in relevant indicators compared to the reference case. When developing the scenario, you also fix the scale and temporal scope of your scenario.
+The solar radiation resource in Broken Hill has been utilized to generate electricity. There is a large solar PV power plant. Besides, the infrastructures for power transmission are well established. All the information is illustrated in figure 2. What we want to do is to further the Broken Hill's role as a solar power generation hot spot for NSW. A project to combine the concentrated solar power generation and thermal storage has been put forward to tackle the challenge of phasing out coal and mining industry.
 
-Visualize potential (scaled) societal benefits of your scenario
-compared to the reference case:
-- Highlight the most dominating changes
-- Exemplify differences in relevant (impact) indicators
-- Relate to a sustainable development framework
-- Don’t try to include everything
-- A poster should be self-explanatory
+![Figure 2, average daily solar exposure and distribution of solar generator capacity in NSW](https://lh3.googleusercontent.com/U5yx_jIOGgNbEqpbfFGeoRBgF-dP8IQnLqxujPhGgXDpyHDJnUriD3YPoeH-TlcP1a6EvY5auS8)
 
-Calculations for CSP - the amount of power that can be produced and how much time do we need to produce an implant f this size
+The project consists of two parts, thermal storage and power generation, which are illustrated in figure 3. The thermal storage system is a collection cycle composed of a solar field and a pit storage, and the working fluid is petroleum oil. The oil is heated to over 250 Celsius degree in solar field and can be directly stored in the pits. There is a series of heat exchangers to transfer the heat from collection cycle to the second part in the project, which is an organic rankine cycle to generate electricity in relatively low temperature with R123 being the working fluid. It is called generation cycle. R123 is heated to steam phase by the heat from collection cycle. The steam turbine convert the heat power to the rotational power, which drives electricity generator to generates electricity. R123 is condensed to liquid phase through cooling tower and repeat the cycle. According to the condition in Broken Hill, the project is designed to be a daily storage system. That is, most of the heat is stored during the day and used to generate electricity during night. Seasonal storage can be introduced in the future to omplement the shortage of solar radiation during winters.
 
-## Part 1
+![Figure 3, illustration of the thermal storage and power generation systems in project](https://lh3.googleusercontent.com/EXejW5qoofPVBjCnvNETsCjawt3DOZnOhhi4W-FXEraDY5JPEMdFQALftUGSdvL39VNZ7iDbczs)
 
-Task 1: Implement the comments from the pitch into your study description. This may mean that you e.g. make smaller changes to the system boundaries or the proposed ideas, that you select new impact indicators to focus on or even that you decide to start all over.
+With income from powr generation, the mining industry can be phased out gradually in the future. The workers out of job because of industry upgrading can be re-employed in the power generation and device production industries. All in all, the future of Broken Hill can be illustrated imaginarily in figure 4.
 
-Guiding questions part 1:
-
-1. What is a clear definition of your geographical area?
-- New South Wales in Australia. The proposed solar power plant will be installed in the city of Broken Hill, where there is strong sunlight and a declining mining industry.
-
-2. What is a clear definition of the system you are examining in the reference case as well as the solution you are proposing in your scenario
-- The electricity generation system is the examined system, because lots of coal is used as the fuel to generate electricity, and the emission is harmful to the environment. Besides, the mining industry is slowing down the economy. Our solution is to phase coal out of power generation by installing solar concentration power generation and storage in former mining areas.
-
-3. What is the proposed time perspective of your scenario? Could the scenario become even more sustainable if the time of implementation was postponed?
-- The life time of a renewable energy power plant is at least 20 years, so we will estimate the revenue from power generation. Also, the effect from reforming the local economy structure will be investigated. All the technologies are mature, so the implementation should not be postponed.
-
-## Part 2
-
-Task 2: Make a more detailed investigation into the situation as it is today in your reference case. Analyse the status of your system of interest. Include a description of the historical development of at least five different kinds of important impact indicators relevant for the study and the geographical area. These indicators may be intensive as well as extensive and can include e.g. kg CO2-eq/year, TOE/$, kg P per capita, t steel/MW, m3 H2O/hour and many others. Use this to identify critical sustainability issues, assets and technologies you have available, and opportunities for change.
-
-Task 3: Develop your scenario: Envision a desirable future for the chosen study area and system. Focus especially on the investigated impact indicators, but try to address a broader range of potential positive effects. Describe the sustainable vision in accordance with selected sustainability principles and limited by local as well as global resources (energy, raw materials and people) but not by e.g. political restrictions. Quantify the scenario compared to the reference case and address influence on the assessed impact indicators. In this task it may be beneficial to use (or be inspired from) established backcasting methods within development of sustainable frameworks e.g. the UN global goals action plan, the Natural Step and the ABCD process or the Wayfinder (see Module 8 slides).
-
-4. What are the main strengths of your proposed scenario compared to the reference case?
-- By replacing the labors and facilities to power generation industry instead of mining industry, the solution can not only solve the problem to supply the electricity with lower carbon emission, but also boom the local economy. People can get re-employment in greener industries rather than being out of job. Furthermore, the land reclamation is possible by constructing heat storage pits.
-
-5. What are the main weaknesses of your proposed scenario compared to the reference case?
-- It requires huge amount of capital cost and long-time management to recover. Local residents should unit together to implement the plan, because private companies or the government cannot do this alone.
-
-6. What indicators will you focus on when quantifying the benefits of your scenario compared to the current reference? Energy metrics? Greenhouse gas emissions? Depletion of limited resources? Health related issues (e.g. Toxicity indicators)? Something else?
-- The pollution from coal combustion and the damage to the environment by the mining industry. Also, working in the mining industry is not an easy job, and the workers are getting more and more criticized. All these factors can be found from relevant agencies in Australia.
-
-7. How does the selection of impact indicators you are focusing on, correspond to the sustainable development you are aiming to achieve?
-- We will focus on lots of kinds of impacts from different sectors, like water, energy, gender equality, because the mining industry has a huge influence in NSW.
-
-8. Which improvements would it not be possible to quantify the effect of – and why. Can you qualitatively characterize these improvements?
-- The changing of economic structures, the GHG emission, and the improvements of local environments. It's hard to quantify the aesthetics of environment, but we will try to visualize the effect by examples from existing projects. The other aspects can be describe qualitatively using historical data from the government and our estimation.
-
-## Part 3
-
-Task 4: Develop a plan for how the reference case can be developed into your desirable future scenario. Determine (qualitatively) how this development contributes to a more sustainable society in your area. Which aspects of sustainable development does it influence? Evaluate the gap between today and the vision and use the conclusions from e.g. a SWOT analysis to identify actions/initiatives/investments that could be relevant for you as engineers to move your system in the study area towards your vision. Imagine and develop at least four initiatives/actions to implement to facilitate your plan for a sustainable development. Explain:
-
-- How each action moves the development in the right direction towards the vision. Does it contribute to dematerialization or substitution?
-- How each action is a stepping stone towards the vision and flexible such that it does not lead to a dead end
-- How each action may support further sustainable development with an adequate return on investment (environmentally, socially and economically)
-
-9. What barriers could you imagine that there would be towards development and implementation of your scenario? Economical? Technical? Political? Cultural? Social?
-- It requires a huge amount of investment in the beginning, so we need to get the private companies, the government and the local citizens, especially to agree the plan. Several steps need to be implemented at once, like the gradual phasing out of thermal power generation and installation of solar power plant. The labors and facilities come from local mining industries, so the schedule to construct the new plants need to consist with the withdraw. It's not that hard to convince the local people to back up the plan, but it's difficult to persuade the politicians to believe the plan will contribute to the local economy.
-
-10. Have you considered scale, quantity and quality of your main resources? how much is there? Is it seasonal? Is it practical to utilize/collect? Can it be efficiently sorted/divided/lightly upgraded into more valuable fractions?
-- We will code a simulation program to explore the operation conditions and the configurations of the proposed power plants, and the corresponding impact on local economy will be examined. Lots of different options can be take, so we will try to optimize the parameters of the system.
-
-11. Is there a match between your solution and the current infrastructure? Does your solution require a lot of additional infrastructure? Does this influence the temporal scope of the scenario?
-- The layouts of high-voltage power transmission networks are coherent with our plans, because there are existing renewable power plants in the intentional areas. What we try to do in the project is to replace the local mining industry with a bigger renewable generation industry. That is, we are taking steps further to turn the mining areas into power generation hubs.
-
-12. Which negative and/positive consequences (burden-lifting >< burden-shifting) does your solution provide in other sectors? Other areas? Other countries? To future generations?
-- Australia is a bit behind regarding GHG emission mitigation, but we are trying to help NSW to catch up by transforming the industries. The local economy and life style will be affect without doubt, but we believe the plan will boost the economy in the long run and solve many environmental issues. People need to learn new techniques to survive in the NSW without mining industry.
-
-## Part 4
-
-Task 5: Prepare a poster (A0) with visualization of the sustainable development you have designed for your area, showing changes between the reference case and the future scenario. The poster should be self-explanatory, i.e. to be understood without a presenter. The poster should include Tables, Figures, and only little text. When designing the poster, you should use your creativity to give the viewer an impression, which he/she will remember.
-
-File type is power point or pdf. Remember to define the poster size in the setup. If possible, make the pdf file with the option “Press Quality” if using Acrobat Pro (check carefully that you get the result that you expect). The poster will be uploaded on ‘Assignments’ under ‘Poster’ with the name ‘Team xx poster’ and all Team members are to accept the content on DTU Inside. We will print the poster for you.
-
-Task 6: Present the poster at a 28870 student poster conference on the 13st of November. There will be approximately 15 minutes available for presentation of each poster incl. questions and feedback.
-
-- Presentation of the poster should take 8 minutes
-- Posters are presented in small groups of students and teachers
-- Everyone has to present the poster once
+![Figure 4, imaginary illustration of Broken Hill in the future.](https://lh3.googleusercontent.com/oECDAqqnEfaDRATzBkQ0iWiF97kwDlPP20z4g6uGh2K2wVyBFXOjBwjCKwFT80zFQfgFpCmhfTM)
