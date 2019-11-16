@@ -1,7 +1,7 @@
 
-# StochasPlan
+# StochasPlan: Optimal Production Investment under Uncertainty
 
-Optimal Production Investment under Uncertainty
+Bridge the gap between the long-term investment decisions about the plants to be built and the short-term operational decisions regarding the production schedule.
 
 ## 1, Introduction
 
