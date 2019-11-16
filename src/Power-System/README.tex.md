@@ -35,7 +35,11 @@
 
 > Solving optimization problems where uncertainty on input data is modeled by continuous stochastic processes is very difficult, or even impossible in many cases. In contrast, discrete stochastic processes can be easily embedded into an optimization problem using the deterministic equivalent problem. For this reason, prior to finding the solution of a stochastic programming problem, every continuous stochastic process is to be replaced by an approximate discrete one. [2]
 
-## 6, References
+## 6, CIED and UCC
+
+
+
+## 7, References
 
 1. Kirschen, D.S. and Strbac, G., 2018. Fundamentals of power system economics. John Wiley & Sons.
 2. Conejo, A.J., Carrión, M. and Morales, J.M., 2010. Decision making under uncertainty in electricity markets (Vol. 1). New York: Springer.

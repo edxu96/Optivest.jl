@@ -1,7 +1,7 @@
 
-# OR-Energy, DTU42002
+# CIED: Capacity Invest and Economic Dispatch
 
-## 1, Simple Economic Dispatch Model
+## 1, Economic Dispatch
 
 For now, you may leave out unit commitment considerations. The model should include investments in both conventional power plants and wind power. To focus on the interactions between various technologies, in particular wind power and other technologies, the model should have an hourly time resolution. In principle, the time horizon of the model could be a year or a number of years. However, to facilitate computations, consider only a small number of representative weeks in a year, for example an average week during each season. Justify any other model assumptions you make.
 
