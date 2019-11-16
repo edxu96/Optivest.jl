@@ -1,5 +1,5 @@
 
-# StochasPlan: Optimal Production Investment under Uncertainty
+# Optivest.jl: Optimal Production Investment under Uncertainty
 
 Bridge the gap between the long-term investment decisions about the plants to be built and the short-term operational decisions regarding the production schedule.
 
