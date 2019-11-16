@@ -1,5 +1,7 @@
 
-# StochasPlan: long-term plan under uncertainty
+# StochasPlan
+
+Optimal Production Investment under Uncertainty
 
 ## 1, Introduction
 
