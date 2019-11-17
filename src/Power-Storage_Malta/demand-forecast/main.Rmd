@@ -1,0 +1,177 @@
+---
+title: "Forecast of Electricity Demand in Malta"
+output: html_notebook
+---
+
+```{r, include = FALSE}
+rm(list = ls())
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.align = "center",
+  fig.asp = 9/16,
+  fig.width = 10,
+  warning = FALSE
+)
+```
+
+```{r}
+library(tidyverse)
+library(readxl)
+library(ggplot2)
+library(lubridate)
+library(writexl)
+library(magrittr)
+```
+
+## 1, Tidy Data
+
+```{r, include=FALSE}
+ti <-
+  readxl::read_excel("~/GitHub/EnergyStorage/demand-forecast/demand-without-renewables.xlsx") %>%
+  mutate(month = 1:12) %>%
+  gather(-month, key = "year", value = "demand") %>%
+  mutate(year = as.numeric(.$year)) %>%
+  mutate(date = ymd(sprintf("%d-%02d-01", .$year, .$month))) %>%
+  mutate(observation = rep(TRUE, length(date))) %>%
+  select(date, demand, observation)
+```
+
+Here is the history data about monthly electricity demand satisfied by non-renewable energy technologies from 2013 to 2017, which are downloaded from Malta National Statistics Office.
+
+```{r}
+head(ti)
+```
+
+```{r}
+ti %>%
+  mutate(month = month(.$date)) %>%
+  mutate(year = as.character(year(.$date))) %>%
+  ggplot() +
+    geom_line(mapping = aes(x = month, y = demand, color = year))
+```
+
+```{r}
+ti %>%
+  ggplot() +
+    geom_line(mapping = aes(x = date, y = demand)) +
+    labs(
+      title = "Monthly Electricity Demand from Non-Renewables",
+      subtitle = "in Malta from 2013 to 2017",
+      y = "Electricity Demand from Non-Renewables (MWh)",
+      x = "Index (Month)"
+      )
+```
+
+## 2, Multiplicative Decomposition
+
+With the economy condition being strong, Malta is expected to have an increasing energy demand. The observation from the time series of data shows significant seasonal variations. The multiplicative decomposition is used to decompose the time series into 3 components: trending, seasonal and random. Seasonal component shows the averaged seasonal variations during the whole data set, while the trending component shows the overall increasing, decreasing or other long-term trend. Random component is supposed to be white noise. After decomposition, statistics analyses of three parts are conducted. A linear regression model is established to forecast the trending component, and the forecast of the time series is the multiplication of the forecasted trending component and the seasonal component.
+
+```{r}
+ts <-
+  ts(ti$demand, frequency = 12)
+
+li_decomp <-
+  ts %>%
+  decompose(type = c("multiplicative"), filter = NULL)
+```
+
+The seasonal compoents is the most important part, and it's shown in the following figure.
+
+```{r}
+ti %>%
+  mutate(coef_decomp = as.numeric(li_decomp$seasonal)) %>%
+  ggplot() +
+    geom_line(mapping = aes(x = date, y = coef_decomp)) +
+    labs(
+      title = "Seasonal Coefficients of Decomposition",
+      subtitle = "for Monthly Non-Re E-Demand in Malta from 2013 to 2017",
+      y = "Seasonal Coefficients",
+      x = "Index (Month)"
+      )
+```
+
+The random component is checked using ACF and PACF.
+
+```{r}
+acf(li_decomp$random, na.action = na.pass)
+```
+
+```{r}
+pacf(li_decomp$random, na.action = na.pass)
+```
+
+We can say that the random component can be treated as white noise.
+
+## 3, Model Trending Component using Linear Regression
+
+```{r}
+acf(li_decomp$trend, na.action = na.pass)
+```
+
+```{r}
+pacf(li_decomp$trend, na.action = na.pass)
+```
+
+```{r}
+arima(as.ts(li_decomp$trend))
+```
+
+Though there is some correlation in ACF of the trending component, the "arima" function shows that no benefit, which is the same as expected becuase the length of the sampling is one month. So linear regression is used.
+
+```{r}
+df_trend <- data.frame(x = 1:length(li_decomp$trend), y = li_decomp$trend)
+lm_trend <- lm(y ~ x, df_trend)
+
+par(mfrow = c(2, 2))
+plot(lm_trend)
+```
+
+The illustration of linear regression anad forecast of trending component is shown in the following figure.
+
+```{r}
+par(mfrow = c(1, 1))
+plot(
+  predict(
+    lm_trend, newdata = data.frame(x = c(1:(length(df_trend$x) + 12 * 10)))
+    )
+  )
+lines(df_trend$x, df_trend$y)
+```
+
+## 4, Forecast
+
+```{r}
+trend_new <- predict(
+  lm_trend, newdata = data.frame(
+    x = c((length(df_trend$x) + 1):(length(df_trend$x) + 12 * 20))
+    )
+  )
+seasonal_new <- rep(li_decomp$seasonal[1:12], 20)
+
+ti_new <-
+  tibble(
+    index = 1:(12 * 20), demand = trend_new * seasonal_new  # multiplicative
+    ) %>%
+  mutate(date = rep(ti$date[60], length(.$index)))
+
+for (i in 1:length(ti_new$index)) {
+  month(ti_new$date[i]) = i + month(ti$date[60])
+}
+
+ti_new %<>%
+  select(date, demand) %>%
+  mutate(observation = rep(FALSE, length(.$date)))
+
+ti_fore <- ti %>%
+  bind_rows(ti_new)
+
+ti_fore %>%
+  ggplot() +
+    geom_line(mapping = aes(x = date, y = demand, color = observation)) +
+    labs(title = "Forecast of Monthly Electricity Demand from Non-Renewables",
+         subtitle = "in Malta from 2018 to 2037 using Data from 2013 to 2017",
+         y = "Electricity Demand from Non-Renewables (MWh)",
+         x = "Index (Month)")
+```
+

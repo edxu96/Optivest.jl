@@ -1,0 +1,149 @@
+---
+title: "Forecast Bi-Annual Electricity Price in Malta"
+output: html_notebook
+date: Oct 20th, 2019
+author: Edward J. Xu (<edxu96@outlook.com>)
+---
+
+```{r, include = FALSE}
+rm(list = ls())
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.align = "center",
+  fig.asp = 9/16,
+  fig.width = 7,
+  warning = FALSE
+)
+```
+
+```{r, warning=FALSE}
+library(tidyverse)
+library(readxl)
+library(ggplot2)
+library(lubridate)
+library(forecast)
+library(writexl)
+library(tseries)
+library(magrittr)
+```
+
+## 1, Data
+
+```{r, include=FALSE}
+ti <-
+  readxl::read_excel("~/GitHub/EnergyStorage/e-price-forecast/e-price.xlsx") %>%
+  as.matrix() %>%
+  t() %>%
+  {tibble(bi_annual = as.numeric(rownames(.)), price = .[,1])} %>%
+  mutate(observation = rep(TRUE, length(.$bi_annual)))
+
+ti[15:23, 2] <- c(16.47, 16.53, 16.51, 16.66, 16.73, 16.78, 16.64, 16.89, 14.74) / 100
+```
+
+Here is the bi-snnual electricity price in Malta (Euro / Kilowatt-hour) with all taxes and levies included, which is downloaded from <https://ec.europa.eu/eurostat/data/database> and <https://www.statista.com/statistics/418104/electricity-prices-for-households-in-malta/>. The data in 2008 and 2009 is missing.
+
+```{r}
+head(ti)
+```
+
+```{r}
+ti %>%
+  ggplot() +
+    geom_line(mapping = aes(x = bi_annual, y = price)) +
+    labs(
+      title = "Bi-Annual Electricity Price in Malta",
+      subtitle = "with All taxes and levies included from 2003f to 2009s",
+      y = "Price (Euro / Kilowatt-hour)",
+      x = "Index (Bi-Annual)"
+      )
+```
+
+## 2, Linear Regression
+
+```{r}
+acf(ti$price, na.action = na.pass)
+```
+
+```{r}
+pacf(ti$price, na.action = na.pass)
+```
+
+There is no obvious seasonal variation or fluctuation. So linear regression is used to model the trend. Then, arima model is used to remove the correlation in residuals.
+
+```{r}
+lm <- lm(price ~ bi_annual, ti)
+```
+
+```{r}
+acf(lm$residuals)
+```
+
+```{r}
+pacf(lm$residuals)
+```
+
+## 3, ARIMA Model of Residuals from Linear Regression
+
+```{r}
+mod_resi_lm <- auto.arima(lm$residuals)
+mod_resi_lm
+```
+
+```{r}
+acf(mod_resi_lm$residuals)
+```
+
+```{r}
+pacf(mod_resi_lm$residuals)
+```
+
+## 3, Forecast
+
+Forecast is the combination of those from linear regression model and arima model.
+
+```{r}
+pred_resi_lm <- predict(mod_resi_lm, n.ahead = 21 * 2)
+pred_lm <- predict(
+  lm, newdata = data.frame(bi_annual = seq(2019.5, 2019.5 + 20.5, by = 0.5))
+  )
+
+ti_fore <- ti %>%
+  bind_rows(
+    tibble(
+      bi_annual = seq(2019.5, 2019.5 + 20.5, by = 0.5),
+      price = as.numeric(pred_resi_lm$pred) + pred_lm,
+      observation = rep(FALSE, length(pred_lm))
+      )
+    )
+```
+
+```{r}
+ti_fore %>%
+  ggplot() +
+    geom_line(mapping = aes(x = bi_annual, y = price, color = observation)) +
+    labs(
+      title = "Forecast of Bi-Annual Electricity Price in Malta",
+      subtitle = "with all included from 19F to 40F using data from 03f to 09s",
+      y = "Price (Euro / Kilo-Watt-Hour)",
+      x = "Bi-Annual"
+      )
+```
+
+## 4, Annual Averaged Price Forecast
+
+```{r}
+ti_annual <-
+  tibble(
+    year = round(seq(2019 - 0.01, 2019 - 0.01 + 20.5, by = 0.5)), 
+    price = c(0.1305, (pred_resi_lm$pred + pred_lm)[1:41]), bi = rep(1:2, 21)
+    ) %>%
+  spread(key = "bi", value = "price") %>%
+  mutate(price_ave = (.$`1` + .$`2`) / 2) %>%
+  select(year, price_ave)
+```
+
+```{r}
+ti_annual
+```
+
