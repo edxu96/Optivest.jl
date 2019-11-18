@@ -10,17 +10,56 @@ Solve the model to find the optimal power system configurations with varing para
 
 ## 2, Prototypical Project
 
-$$ \begin{array}{c c}<br>
-\hline \text{Symbol} & \text{Definition} \ \hline T & \text{Time Units} \ J & \text{Controllable generation technologies} \ \hline \end{array} $$
+$$
+\begin{array}{c c}
+	\hline
+	\text{Symbol} & \text{Definition} \\
+	\hline
+	T & \text{Time Units} \\
+	J & \text{Controllable generation technologies} \\
+	\hline
+\end{array}
+$$
 
 _Table 1, summary of sets_
 
-$$ \begin{array}{c l c c} \hline \text{Symbol} & \text{Definition} & \text{Set} \ \hline y_{j} & \text{Capacity of different generation technologies} & J \ x_{j, t} & \text{Power output} & J, T \ z & \text{Percent of new wind turbine compared with installed} & {\text{wind}} \ \hline \end{array} $$
+$$
+\begin{array}{c l c c}
+	\hline
+	\text{Symbol} & \text{Definition} & \text{Set} \\
+	\hline
+	y_{j} & \text{Capacity of different generation technologies} & J \\
+	x_{j, t} & \text{Power output} & J, T \\
+	z & \text{Percent of new wind turbine compared with installed} & {\text{wind}} \\
+	\hline
+\end{array}
+$$
 
 _Table 2, summary of decision variables_
 
-$$ \begin{array}{c l c c} \hline \text{Symbol} & \text{Definition} & \text{Unit} & \text{Set} \ \hline w_{t} & \text{Historical wind power output of installed turbines} & \text{MWh} & T \ d_{t} & \text{Historical electricity demand} & \text{MWh} & T \ c^{fix}_{j} & \text{Fixed cost per capacity of different generation technologies} & \text{DKK / MW} & J \ c^{fix, wind} & \text{Fixed cost per percent capacity of wind turbines} & \text{DKK / %} &{\text{wind}} \ c^{var}_{j, t} & \text{Production cost per unit output of different generation technologies} & \text{DKK / MWh} & J, T \ s^{max}_{j} & \text{Max controllable increment power output} & \text{%} & J \ \beta_{j} & \text{minimum load percent of full load} & \text{%} & J \ \hline \end{array} $$
+$$
+\begin{array}{c l c c}
+	\hline
+	\text{Symbol} & \text{Definition} & \text{Unit} & \text{Set} \\
+	\hline
+	w_{t} & \text{Historical wind power output of installed turbines} & \text{MWh} & T \\
+	d_{t} & \text{Historical electricity demand} & \text{MWh} & T \\
+	c^{fix}_{j} & \text{Fixed cost per capacity of different generation technologies} & \text{DKK / MW} & J \\
+	c^{fix, wind} & \text{Fixed cost per percent capacity of wind turbines} & \text{DKK / %} &{\text{wind}} \\
+	c^{var}_{j, t} & \text{Production cost per unit output of different generation technologies} & \text{DKK / MWh} & J, T \\
+	s^{max}_{j} & \text{Max controllable increment power output} & \text{%} & J \\
+	\beta_{j} & \text{minimum load percent of full load} & \text{%} & J \\ \hline
+\end{array}
+$$
 
 _Table 3, summary of constants_
 
-$$ \begin{align} \text{min} \quad & \sum_j c^{fix}_{i} y_{j} + c^{fix, wind} z + \sum_j \sum_t c^{var}_{j, t} x_{j, t} \quad \text{(DKK)} \ \text{s.t.} \quad & x_{j, t} \leq y_{j} * 1 \quad \text{for } j \in J, t \in T \quad \text{(MWh)} \ & \sum_j x_{j, t} \geq d_{t} - w_{t} * z \quad \text{for } j \in J, t \in T \quad \text{(MWh)} \ & - s^{max}_{j} y_{j} \leq x_{j, t+1} - x_{j, t} \leq s^{max}_{j} y_{j} \quad \text{for } j \in J, t \in T \quad \text{(MWh)} \ & x_{j, t} \geq \beta_{j} \quad \text{for } j \in J, t \in T \quad \text{(MWh)} \end{align} $$
+$$
+\begin{align}
+\text{min} \quad & \sum_j c^{fix}_{i} y_{j} + c^{fix, wind} z + \sum_j \sum_t c^{var}_{j, t} x_{j, t} \quad \text{(DKK)} \\
+\text{s.t.} \quad & x_{j, t} \leq y_{j} * 1 \quad \text{for } j \in J, t \in T \quad \text{(MWh)} \\
+& \sum_j x_{j, t} \geq d_{t} - w_{t} * z \quad \text{for } j \in J, t \in T \quad \text{(MWh)} \\
+& - s^{max}_{j} y_{j} \leq x_{j, t+1} - x_{j, t} \leq s^{max}_{j} y_{j} \quad \text{for } j \in J, t \in T \quad \text{(MWh)} \\
+& x_{j, t} \geq \beta_{j} \quad \text{for } j \in J, t \in T \quad \text{(MWh)}
+\end{align}
+$$
