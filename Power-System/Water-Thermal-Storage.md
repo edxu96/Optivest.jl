@@ -6,13 +6,18 @@ Three vertical cylindrical hot water tanks with inner height/inner diameter rati
 1. Calculate the heat storage capacity of the hot water tanks.
 
 2. Calculate the theoretical heat loss coefficients of the hot water tanks.
-Assume a uniform tank temperature of 90°C and an ambient air temperature of 20°C.
+Assume a uniform tank temperature of 90 $^{\circ}$C and an ambient air temperature of 20 $^{\circ}$C.
 
 3. What are the heat losses of the tanks in this situation?
 
 4. What are the tank temperatures for the three tanks after a 12 h stand by period without charge and discharge of the tank, assuming that there is no thermal stratification in the tanks?
 
-5. What are the heat losses for the three tanks during the 12 h period?
-It is assumed, that the heat of the tanks is useful as long as the water temperature is higher than $50^{\circ}$C.
+$$
+C \frac{\mathrm{d} T}{\mathrm{t}} = - K (T - T^{\text{amb}})
+$$
+
+5. What are the heat losses for the three tanks during the 12 h period? It is assumed, that the heat of the tanks is useful as long as the water temperature is higher than 50 $^{\circ}$C.
+
+
 
 6. How large a part of the useful heat of the three tanks are lost during the 12 h stand by period.
