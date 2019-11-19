@@ -2,6 +2,7 @@
 ## Edward J. Xu (edxu96@outlook.com)
 ## Nov 15th, 2019
 
+using ExcelReaders
 using JuMP
 using GLPK
 
@@ -35,8 +36,13 @@ function optim_mod_1()
     vec_result_u = dual_vec([vec_cons_1, vec_cons_2, vec_cons_3, vec_cons_4])
     obj = objective_value(model)
     vec_result_x = value_vec(vec_x)
-    
+
     return obj, vec_result_x, vec_result_u
+end
+
+
+function get_data()
+    
 end
 
 
