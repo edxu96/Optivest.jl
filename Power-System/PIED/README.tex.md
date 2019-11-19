@@ -1,12 +1,12 @@
-# CIED: Capacity Invest and Economic Dispatch
+# PIED: Production Invest and Economic Dispatch
 
-## 1, Economic Dispatch
+## 1, Production Invest and Economic Dispatch
 
-For now, you may leave out unit commitment considerations. The model should include investments in both conventional power plants and wind power. To focus on the interactions between various technologies, in particular wind power and other technologies, the model should have an hourly time resolution. In principle, the time horizon of the model could be a year or a number of years. However, to facilitate computations, consider only a small number of representative weeks in a year, for example an average week during each season. Justify any other model assumptions you make.
-
-Construct a data set for the technologies included in the model. Note that if the time horizon is a year, investment costs can be annualized, and operations costs can be multiplied by the number of weeks in a year, a representative week covers (for an average week during each season, approximately 13). Wind power production and electricity demand can be found at www.energinet.dk, and technology data, fuel and emission prices at www.ens.dk.
-
-Solve the model to find the optimal power system configurations with varing parameters on fuel and emission prices to do sensitivity analysis. You may for instance, solve the model with fuel and emission prices increased and decreased by 10%.
+- For now, you may leave out unit commitment considerations.
+- The model should include investments in both conventional power plants and wind power.
+- In principle, the time horizon of the model could be a year or a number of years. However, to facilitate computations, consider only a small number of representative weeks in a year, for example an average week during each season. Justify any other model assumptions you make.
+- Note that if the time horizon is a year, investment costs can be annualized, and operations costs can be multiplied by the number of weeks in a year, a representative week covers (for an average week during each season, approximately 13).
+- Solve the model to find the optimal power system configurations with varying parameters on fuel and emission prices to do sensitivity analysis. You may for instance, solve the model with fuel and emission prices increased and decreased by 10%.
 
 ## 2, Prototypical Project
 
@@ -47,7 +47,7 @@ $$
 	a & \text{Length of the time interval} & \text{hour} & - \\
 	c^{fix}_{j} & \text{Fixed cost per capacity of different generation technologies} & \text{DKK / MW} & J \\
 	c^{fix, wind} & \text{Fixed cost per percent capacity of wind turbines} & \text{DKK / %} &{\text{wind}} \\
-	c^{var}_{j, t} & \text{Production cost per unit output of different generation technologies} & \text{DKK / MW} & J, T \\
+	c^{var}_{j} & \text{Production cost per unit output of different generation technologies} & \text{DKK / MW} & J \\
 	s^{max}_{j} & \text{Max percent of controllable increment power output} & \text{%} & J \\
 	\beta_{j} & \text{Minimum percent of load percent of full load} & \text{%} & J \\ \hline
 \end{array}
@@ -57,7 +57,7 @@ _Table 3, summary of constants_
 
 $$
 \begin{align}
-\text{min} \quad & \sum_j c^{fix}_{i} y_{j} + c^{fix, wind} z + a \sum_j \sum_t c^{var}_{j, t} x_{j, t} \quad \text{(DKK)} \\
+\text{min} \quad & \sum_j c^{fix}_{i} y_{j} + c^{fix, wind} z + a \sum_j \sum_t c^{var}_{j} x_{j, t} \quad \text{(DKK)} \\
 \text{s.t.} \quad & x_{j, t} \leq a y_{j} \quad \text{for } j \in J, t \in T \quad \text{(MWh)} \\
 & \sum_j x_{j, t} \geq d_{t} - w_{t} * z \quad \text{for } j \in J, t \in T \quad \text{(MWh)} \\
 & - s^{max}_{j} y_{j} \leq x_{j, t+1} - x_{j, t} \leq s^{max}_{j} y_{j} \quad \text{for } j \in J, t \in T \quad \text{(MWh)} \\
@@ -65,7 +65,7 @@ $$
 \end{align}
 $$
 
-## Data
+### Important Parameters
 
 $$
 \begin{array}{c c c}
@@ -75,22 +75,28 @@ $$
 	a &  \text{hour} & 0.5 \\
 	c^{fix}_{1} &  \text{DKK / MW} &  \\
 	c^{fix}_{2} &  \text{DKK / MW} &  \\
-	c^{fix, wind} & \text{DKK / %} &{\text{wind}} \\
-	c^{var}_{j, t} & \text{DKK / MW} & J, T \\
-	s^{max}_{j} & \text{%} & J \\
-	\beta_{j} & \text{%} & J \\ \hline
+	c^{fix, wind} & \text{DKK / %} &  \\
+	c^{var}_{1} & \text{DKK / MW} & \\
+	c^{var}_{2} & \text{DKK / MW} & \\
+	s^{max}_{1} & \text{%} & \\
+	s^{max}_{2} & \text{%} & \\
+	\beta_{1} & \text{%} & \\ \hline
+	\beta_{2} & \text{%} & \\ \hline
 \end{array}
 $$
 
 _Table 3, summary of important constants_
 
-
 ## Integration of Electric Vehicles
 
 The purpose of this extension is to include the modelling of electric cars and wind power in the model, and furthermore, to use this as a basis for analyzing the effects of demand flexibility from electric vehicles on integration of variable renewables.
 
-- Formulate the additional constraints necessary for including electric vehicles, and implement it in your investment model in GAMS. You may consider battery electric vehicles (driving on electricity only) only, or both these and hybrid electric vehicles (driving on fuel or electricity). You may want to revisit your time horizon from the base model. Justify any other model assumptions you make.
-- Construct a data set for electric vehicles. Data for electric vehicles can be found in the references below, however, consider using updated data on battery sizes. Driving demands can be found on Inside. If you consider future years, remember to make assumptions on future demands from electric vehicles.
+- You may consider battery electric vehicles (driving on electricity only) only, or both these and hybrid electric vehicles (driving on fuel or electricity).
+- You may want to revisit your time horizon from the base model.
+- Justify any other model assumptions you make.
+- Data for electric vehicles can be found in the references below, however, consider using updated data on battery sizes.
+- Driving demands can be found on Inside.
+- If you consider future years, remember to make assumptions on future demands from electric vehicles.
 - Solve the model to obtain the optimal investments in the power system with and without the inclusion of electric cars.
 - Present and discuss your results. The discussion should include the effects of demand flexibility from electric vehicles on integration of variable renewables. How are total costs affected? How does the consumption from electric vehicles and the variable renewables power generation complement each other? What is the impact on the operation of the conventional power generating units? How are electricity prices affected? Remember to make a sensitivity analysis on important parameters.
 
