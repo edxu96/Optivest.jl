@@ -32,3 +32,8 @@ A report from Australian Solar Thermal Research Initiative (<https://www.astri.o
 ![Figure 5](../images/19.png)
 
 _Figure 5, net present value analysis of concentrated solar power generation and thermal storage systems in Australia. Different lines represent performances of systems with different storage length. The systems with longer storage length needs more investment at the beginning, but they can get the return on investment sooner and more profit afterwards. It takes the CSP system without thermal storage 10 years, that is 5 years more, to recover all the investment._
+
+## System Configuration
+
+- The quantity of the main materials
+- The quantity of rare materials.
