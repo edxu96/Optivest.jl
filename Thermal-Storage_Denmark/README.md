@@ -5,7 +5,7 @@
 1. Locate a district heating system, find out the annual heat demand, supply temperature, return temperature of the district heating plant. Calculate degree*hour for the heating system
 2. Identify the size of a solar district heating system that can cover more than 50% of the annual heat demand of the district heating system obtained in the previous question. The configuration of the solar district heating system should be similar to the Marstal solar heating system. Determine average solar collector efficiency for the solar collector field. Determine the levelized cost of heat for the system.
 3. Analyze the energy balance of the PTES and the tank heat storage calculated by the program SDHCal. Determine the average heat loss coefficients of the top cover, sides and the bottom surface of the PTES. Determine annual heat recovery rate of the heat storages
-4. Carry out parametric investigations for different scenarios, for instance, different fuel price, different system size with an aim to decrease the levelized cost heat.
+4. Carry out parametric investigations for different scenarios, for instance, different fuel price, different system size with an aim to decrease the levelized cost of heat.
 
 ## References
 
