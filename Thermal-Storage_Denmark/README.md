@@ -9,19 +9,19 @@
 
 ## References
 
-The reference solar district heating system in Marstal, Denmark. For the reference year used in the program, the sum of degree-hour per year is 81834\. The yearly solar radiation on a tilted surface of $35^{\circ}$C facing south is 1083 kWh/m2\. Info about the Marstal Solar heating plant is:
+The reference solar district heating system in Marstal, Denmark. For the reference year used in the program, the sum of degree-hour per year is 81834\. The yearly solar radiation on a tilted surface of $35^{\circ}$ facing south is 1083 kWh/m2\. Info about the Marstal Solar heating plant is:
 
 1. District heating net. The Marstal district heating net has an annual consumption of 32000 MWh. The supply temperature and the return temperature of the district heat net is $75^{\circ}$C and $35^{\circ}$C respectively.
-2. There are three solar collector fields. The tilt of the collector in the three fields is $35^{\circ}$C. The distance of between collector rows is 4.5 m. Collector area and efficiency expressions are given as follows.
+2. There are three solar collector fields. The tilt of the collector in the three fields is $35^{\circ}$. The distance between collector rows is 4.5 m. Collector area and efficiency expressions are given as follows.
 
 $$ \eta=\eta_{0} K_{\theta}-\frac{a_{1}\left(T_{m}-T_{a}\right)}{G}-\frac{a_{2}\left(T_{m}-T_{a}\right)^{2}}{G} $$
 
-  Row   | Collector Field Area | $\eta_{0}$ |  $a_{1}$  |  $a_{1}$  |  cost
-:-----: | :------------------: | :--------: | :-------: | :-------: | :----:
- Unit   |       ($m^2$)        |     -      | (W/m^2/K) | (W/m^2/K) | DKK/m2
-Field 1 |         9043         |    0.76    |    3.5    |   0.002   |  1200
-Field 2 |         9124         |    0.81    |   2.57    |  0.0079   |  1400
-Field 3 |        15000         |    0.85    |   3.07    |   0.01    |  1500
+|   Row   | Collector Field Area | $\eta_{0}$ |  $a_{1}$  |  $a_{1}$  |  cost  |
+|:-------:|:--------------------:|:----------:|:---------:|:---------:|:------:|
+|  Unit   |       ($m^2$)        |     -      | (W/m^2/K) | (W/m^2/K) | DKK/m2 |
+| Field 1 |         9043         |    0.76    |    3.5    |   0.002   |  1200  |
+| Field 2 |         9124         |    0.81    |   2.57    |  0.0079   |  1400  |
+| Field 3 |        15000         |    0.85    |   3.07    |   0.01    |  1500  |
 
 1. The water pit heat storage used in the plant has a volume of 75000 m3\. The height to diameter ratio of the storage is 0.0705\. The storage was insulated with 0.24 m PE foam. Thermal conductivity of the PE foam is 0.05 W/m/K.
 2. The steel buffer tank has a volume of $2100 m^3$ and a height to diameter ratio of 0.6612\. The heat loss coefficient of the tank is estimated to be 278 W/K.
