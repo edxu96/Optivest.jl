@@ -6,6 +6,7 @@
 using JuMP
 using GLPK
 using CSV
+using CPLEX
 
 # cd("/Users/edxu96/GitHub/Optivest.jl/Power-System/PIED")
 
@@ -27,7 +28,8 @@ end
 
 
 function optim_mod_1(
-        vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var, vec_max, vec_min
+        vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var, vec_max,
+        vec_min
         )
     model = Model(with_optimizer(GLPK.Optimizer))
 
@@ -73,7 +75,7 @@ function optim_mod_2(
         vec_min, vec_eta_plus, vec_eta_minus, vec_u_plus_max, vec_u_minus_max,
         vec_l_min, vec_l_max, vec_num, mat_demand_ev
         )
-    model = Model(with_optimizer(GLPK.Optimizer))
+    model = Model(with_optimizer(CPLEX.Optimizer))
 
     @variable(model, mat_x[1:2, 1:168] >= 0)
     @variable(model, vec_cap[1:2] >= 0)
@@ -108,7 +110,7 @@ function optim_mod_2(
 
     # Additional constraints for EVs
     @constraint(model, vec_cons_6[g = 1:20, t = 1:167],
-        mat_l[g, t+1] = mat_l[g, t] + 1 * mat_u_plus[g, t] * vec_eta_plus[g] -
+        mat_l[g, t+1] == mat_l[g, t] + 1 * mat_u_plus[g, t] * vec_eta_plus[g] -
             1 * mat_u_minus[g, t] - 1 * mat_demand_ev[g, t]
         )
     @constraint(model, vec_cons_7[g = 1:20, t = 1:168],
@@ -124,10 +126,10 @@ function optim_mod_2(
         mat_u_minus[g, t] * vec_eta_minus[g] <= vec_u_minus_max[g]
         )
     @constraint(model, vec_cons_11[g = 1:20, t = 1:168],
-        mat_u_plus[g, t] * mat_demand_ev[g, t] = 0
+        mat_u_plus[g, t] * mat_demand_ev[g, t] == 0
         )
     @constraint(model, vec_cons_12[g = 1:20, t = 1:168],
-        mat_u_minus[g, t] * mat_demand_ev[g, t] = 0
+        mat_u_minus[g, t] * mat_demand_ev[g, t] == 0
         )
 
     optimize!(model)
@@ -161,8 +163,8 @@ function get_data()
     mat_demand_weekend = CSV.read("../data/weekend.csv")[1:20, 1:24]
     mat_demand_weekday = CSV.read("../data/weekday.csv")[1:20, 1:24]
     mat_demand_ev = hcat(mat_demand_weekday, mat_demand_weekday,
-        mat_demand_weekday, mat_demand_weekday, mat_demand_weekday
-        mat_demand_weekend, mat_demand_weekend, makeunique=true)
+        mat_demand_weekday, mat_demand_weekday, mat_demand_weekday,
+        mat_demand_weekend, mat_demand_weekend, makeunique = true)
 
     return vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var, vec_max,
         vec_min, vec_eta_plus, vec_eta_minus, vec_u_plus_max, vec_u_minus_max,
