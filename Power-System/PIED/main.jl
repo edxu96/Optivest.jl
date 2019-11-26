@@ -162,6 +162,7 @@ end
 
 
 function get_data()
+    ## Data for wind output and demand
     vec_demand = CSV.read("../data/demand.csv")[!, 2]
     vec_wind = CSV.read("../data/wind.csv")[!, 2]
     vec_c_fix = [441, 2541]
@@ -169,15 +170,18 @@ function get_data()
     c_fix_wind = 8000000 * 50  # !!! Cost of percent
     vec_ramp_rate_max = [1, 0.6]
     vec_min_rate = [0.23, 0.5]
+
+    ## Data for EVs
     vec_eta_plus = repeat([0.94], 20)
     vec_eta_minus = repeat([0.886], 20)
-    vec_u_plus_max = repeat([0.14], 20)
-    vec_u_minus_max = repeat([0.035], 20)
+    vec_u_plus_max = repeat([0.035], 20)
+    vec_u_minus_max = repeat([0.14], 20)
     vec_l_min = repeat([0.0028], 20)
     vec_l_max = repeat([0.07], 20)
     vec_num = [28, 66, 68, 143, 160, 174, 188, 213, 227, 242, 244, 256, 303,
         360, 368, 428, 471, 472, 526, 1102]
 
+    ## Data for driving patterns
     mat_demand_weekend =
         CSV.read("../data/demand-EV_weekend.csv")[1:20, 1:24] .* 0.0001666
     mat_demand_weekday =
