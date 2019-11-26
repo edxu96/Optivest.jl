@@ -7,6 +7,8 @@ using JuMP
 using GLPK
 using CSV
 using CPLEX
+using PrettyTables
+using DataFrames
 
 # cd("/Users/edxu96/GitHub/Optivest.jl/Power-System/PIED")
 
@@ -26,6 +28,16 @@ end
 #     return [dual(vec_cons[i]) for i = 1:length(vec_cons)]
 # end
 
+function print_result(model, vec_y, z)
+
+    obj_result = objective_value(model)
+    vec_y_result = value_vec(vec_y)
+    z_result = value(z)
+
+    mat_result = [obj_result vec_y_result[1] vec_y_result[2] z_result]
+    pretty_table(mat_result, ["obj" "y_gt" "y_biomass" "z"])
+end
+
 
 function optim_mod_1(
         vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var,
@@ -34,38 +46,38 @@ function optim_mod_1(
     model = Model(with_optimizer(GLPK.Optimizer))
 
     @variable(model, mat_x[1:2, 1:168] >= 0)
-    @variable(model, vec_cap[1:2] >= 0)
-    @variable(model, 0 <= frac_wind <= 1)
+    @variable(model, vec_y[1:2] >= 0)
+    @variable(model, 0 <= z <= 1)
 
     @objective(model, Min,
         sum(mat_x[i, t] * vec_c_var[i] for i = 1:2, t = 1:168) +
-        sum(vec_cap[i] * vec_c_fix[i] for i = 1:2) +
-        c_fix_wind * frac_wind
+        sum(vec_y[i] * vec_c_fix[i] for i = 1:2) +
+        c_fix_wind * z
         )
     @constraint(model, mat_cons_1[j = 1:2, t = 1:167],
-        - vec_ramp_rate_max[j] * vec_cap[j] <= mat_x[j, t+1] - mat_x[j, t]
+        - vec_ramp_rate_max[j] * vec_y[j] <= mat_x[j, t+1] - mat_x[j, t]
         )  # Ramping down ability
     @constraint(model, vec_cons_2[t = 1:168],
-        mat_x[1, t] + mat_x[2, t] >= vec_demand[t] - frac_wind * vec_wind[t]
+        mat_x[1, t] + mat_x[2, t] >= vec_demand[t] - z * vec_wind[t]
         )  # Satisfy the demand
     @constraint(model, vec_cons_3[i = 1:2, t = 1:168],
-        mat_x[i, t] <= vec_cap[i]
+        mat_x[i, t] <= vec_y[i]
         )
     @constraint(model, mat_cons_4[i = 1:2, t = 1:167],
-        mat_x[i, t+1] - mat_x[i, t] <= vec_ramp_rate_max[i] * vec_cap[i]
+        mat_x[i, t+1] - mat_x[i, t] <= vec_ramp_rate_max[i] * vec_y[i]
         )  # Ramping up ability
     @constraint(model, vec_cons_5[i = 1:2, t = 1:168],
-        mat_x[i, t] >= vec_min_rate[i] * vec_cap[i]
+        mat_x[i, t] >= vec_min_rate[i] * vec_y[i]
         )  # Min load
 
     optimize!(model)
-    # vec_result_u = dual_vec([vec_cons_1, vec_cons_2, vec_cons_3, vec_cons_4])
-    obj = objective_value(model)
-    mat_x_result = [value(mat_x[j, i]) for j = 1:2, i = 1:168]
-    vec_cap_result = value_vec(vec_cap)
-    frac_wind_result = value(frac_wind)
 
-    return obj, mat_x_result, vec_cap_result, frac_wind_result
+    ## Get the optimization result
+    print_result(model, vec_y, z)
+    # vec_result_u = dual_vec([vec_cons_1, vec_cons_2, vec_cons_3, vec_cons_4])
+    mat_x_result = [value(mat_x[j, i]) for j = 1:2, i = 1:168]
+
+    return mat_x_result
 end
 
 
@@ -79,36 +91,36 @@ function optim_mod_2(
 
     model = Model(with_optimizer(CPLEX.Optimizer))
     @variable(model, mat_x[1:2, 1:168] >= 0)
-    @variable(model, vec_cap[1:2] >= 0)
-    @variable(model, 0 <= frac_wind <= 1)
+    @variable(model, vec_y[1:2] >= 0)
+    @variable(model, 0 <= z <= 1)
     @variable(model, mat_u_plus[1:20, 1:168] >= 0)
     @variable(model, mat_u_minus[1:20, 1:168] >= 0)
     @variable(model, mat_l[1:20, 1:168] >= 0)
 
     @objective(model, Min,
         sum(mat_x[i, t] * vec_c_var[i] for i = 1:2, t = 1:168) +
-            sum(vec_cap[i] * vec_c_fix[i] for i = 1:2) +
-            c_fix_wind * frac_wind
+            sum(vec_y[i] * vec_c_fix[i] for i = 1:2) +
+            c_fix_wind * z
         )
 
     ## Basic constraints
     @constraint(model, mat_cons_1[j = 1:2, t = 1:167],
-        - vec_ramp_rate_max[j] * vec_cap[j] <= mat_x[j, t+1] - mat_x[j, t]
+        - vec_ramp_rate_max[j] * vec_y[j] <= mat_x[j, t+1] - mat_x[j, t]
         )  # Ramping down ability
     @constraint(model, vec_cons_2[t = 1:168],
         mat_x[1, t] + mat_x[2, t] +
             sum(mat_u_minus[g, t] * vec_eta_minus[g] * vec_num[g]
-            for g = 1:20) >= vec_demand[t] - frac_wind * vec_wind[t] +
+            for g = 1:20) >= vec_demand[t] - z * vec_wind[t] +
             sum(mat_u_plus[g, t] * vec_num[g] for g = 1:20)
         )  # Satisfy the demand
     @constraint(model, vec_cons_3[i = 1:2, t = 1:168],
-        mat_x[i, t] <= vec_cap[i]
+        mat_x[i, t] <= vec_y[i]
         )
     @constraint(model, mat_cons_4[i = 1:2, t = 1:167],
-        mat_x[i, t+1] - mat_x[i, t] <= vec_ramp_rate_max[i] * vec_cap[i]
+        mat_x[i, t+1] - mat_x[i, t] <= vec_ramp_rate_max[i] * vec_y[i]
         )  # Ramping up ability
     @constraint(model, vec_cons_5[i = 1:2, t = 1:168],
-        mat_x[i, t] >= vec_min_rate[i] * vec_cap[i]
+        mat_x[i, t] >= vec_min_rate[i] * vec_y[i]
         )  # Min load
 
     ## Additional constraints for EVs
@@ -136,13 +148,16 @@ function optim_mod_2(
         )
 
     optimize!(model)
-    # vec_result_u = dual_vec([vec_cons_1, vec_cons_2, vec_cons_3, vec_cons_4])
-    obj = objective_value(model)
-    mat_x_result = [value(mat_x[j, i]) for j = 1:2, i = 1:168]
-    vec_cap_result = value_vec(vec_cap)
-    frac_wind_result = value(frac_wind)
 
-    return obj, mat_x_result, vec_cap_result, frac_wind_result
+    ## Get the optimization result
+    print_result(model, vec_y, z)
+    # vec_result_u = dual_vec([vec_cons_1, vec_cons_2, vec_cons_3, vec_cons_4])
+    mat_x_result = [value(mat_x[j, t]) for j = 1:2, t = 1:168]
+    mat_u_plus_result = [value(mat_u_plus[g, t]) for g = 1:20, t = 1:168]
+    mat_u_minus_result = [value(mat_u_minus[g, t]) for g = 1:20, t = 1:168]
+    mat_l_result = [value(mat_l[g, t]) for g = 1:20, t = 1:168]
+
+    return mat_x_result, mat_u_plus_result, mat_u_minus_result, mat_l_result
 end
 
 
@@ -183,20 +198,42 @@ function main()
         vec_min_rate, vec_eta_plus, vec_eta_minus, vec_u_plus_max,
         vec_u_minus_max, vec_l_min, vec_l_max, vec_num, mat_demand_ev =
         get_data()
-        
-    obj, mat_x_result, vec_cap_result, frac_wind_result = optim_mod_1(
+
+    ## Optimize model 1
+    mat_x_result_1 = optim_mod_1(
         vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var,
         vec_ramp_rate_max, vec_min_rate
         )
-
-    obj, mat_x_result, vec_cap_result, frac_wind_result = optim_mod_2(
-        vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var,
-        vec_ramp_rate_max, vec_min_rate, vec_eta_plus, vec_eta_minus,
-        vec_u_plus_max, vec_u_minus_max, vec_l_min, vec_l_max, vec_num,
-        mat_demand_ev
+    CSV.write(
+        "../results/mat_x_result_1.csv", DataFrame(mat_x_result_1'),
+        writeheader = false
         )
-    return obj, mat_x_result, vec_cap_result, frac_wind_result
+
+    ## Optimize model 2
+    mat_x_result_2, mat_u_plus_result, mat_u_minus_result, mat_l_result =
+        optim_mod_2(
+            vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var,
+            vec_ramp_rate_max, vec_min_rate, vec_eta_plus, vec_eta_minus,
+            vec_u_plus_max, vec_u_minus_max, vec_l_min, vec_l_max, vec_num,
+            mat_demand_ev
+            )
+    CSV.write(
+        "../results/mat_x_result_2.csv", DataFrame(mat_x_result_2'),
+         writeheader = false
+        )
+    CSV.write(
+        "../results/mat_u_plus_result.csv", DataFrame(mat_u_plus_result'),
+        writeheader = false
+        )
+    CSV.write(
+        "../results/mat_u_minus_result.csv", DataFrame(mat_u_minus_result'),
+        writeheader = false
+        )
+    CSV.write(
+        "../results/mat_l_result.csv", DataFrame(mat_l_result'),
+        writeheader = false
+        )
 end
 
 
-obj, mat_x_result, vec_cap_result, frac_wind_result = main()
+main()
