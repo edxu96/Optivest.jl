@@ -132,4 +132,4 @@ ti_ev %>%
       )
 ```
 
-
+To plot the line and bar graphs separately in two facets, use a dummy facet. See <https://sebastianrothbucher.github.io/datascience/r/visualization/ggplot/2018/03/24/two-scales-ggplot-r.html>.
