@@ -1,0 +1,135 @@
+---
+title: "Production Investment and Economic Dispatch in Renewable Energy System"
+output: html_notebook
+author: Edward J. Xu (<edxu96@outlook.com>)
+date: "`r Sys.Date()`"
+---
+
+```{r}
+rm(list = ls())
+setwd("~/GitHub/Optivest.jl/Power-System/PIED")
+
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.align = "center",
+  fig.asp = 9/16,
+  fig.width = 12,
+  warning = FALSE
+)
+```
+
+```{r, message=FALSE}
+library(tidyverse)
+library(magrittr)
+library(ggplot2)
+library(tidyr)
+```
+
+# Model without Storage Devices
+
+## Demand, Wind Power Output and Dispatch of Gas Turbine
+
+When `c_fix_wind` = 500000. Notice that the demand is satisfied entirely by gas turbine.
+
+```{r, warning=FALSE, message=FALSE, fig.width = 7}
+ti_3 <- 
+  read_csv("../results/3/mat_x_result_1.csv", col_names = c("gt", "bio")) %>%
+  mutate(index = row_number()) %>%
+  bind_cols(read_csv("../data/demand.csv")[,2]) %>%
+  bind_cols(read_csv("../data/wind.csv")[,2]) %>%
+  select(index, demand, wind, gt)
+
+ti_3 %>%
+  gather(-index, key = "whi", value = "power") %>%
+  ggplot() + 
+    geom_line(mapping = aes(x = index, y = power, color = whi)) +
+    geom_abline(aes(intercept = 3208, slope = 0), color = "black") +
+    geom_abline(aes(intercept = 3208 * 0.23, slope = 0), color = "black") +
+    labs(
+      title = "Demand, Wind Power Output and Dispatch of Gas Turbine",
+      x = "Time Index", y = "Power (MW)"
+      )
+```
+
+When `c_fix_wind` = 70000.
+
+```{r, warning=FALSE, message=FALSE, fig.width = 7}
+ti <- 
+  read_csv("../results/2/mat_x_result_1.csv", col_names = c("gt", "bio")) %>%
+  mutate(index = row_number()) %>%
+  bind_cols(read_csv("../data/demand.csv")[,2]) %>%
+  bind_cols(read_csv("../data/wind.csv")[,2]) %>%
+  select(index, demand, wind, gt)
+
+ti %>%
+  gather(-index, key = "whi", value = "power") %>%
+  ggplot() + 
+    geom_line(mapping = aes(x = index, y = power, color = whi)) +
+    geom_abline(aes(intercept = 3208, slope = 0), color = "black") +
+    geom_abline(aes(intercept = 3208 * 0.23, slope = 0), color = "black") +
+    labs(
+      title = "Demand, Wind Power Output and Dispatch of Gas Turbine",
+      x = "Time Index", y = "Power (MW)"
+      )
+```
+
+When `c_fix_wind` = 50000.
+
+```{r, warning=FALSE, message=FALSE, fig.width = 7}
+ti_1 <- 
+  read_csv("../results/1/mat_x_result_1.csv", col_names = c("gt", "bio")) %>%
+  mutate(index = row_number()) %>%
+  bind_cols(read_csv("../data/demand.csv")[,2]) %>%
+  bind_cols(read_csv("../data/wind.csv")[,2]) %>%
+  select(index, demand, wind, gt)
+
+ti_1 %>%
+  gather(-index, key = "whi", value = "power") %>%
+  ggplot() + 
+    geom_line(mapping = aes(x = index, y = power, color = whi)) +
+    geom_abline(aes(intercept = 3208, slope = 0), color = "black") +
+    geom_abline(aes(intercept = 3208 * 0.23, slope = 0), color = "black") +
+    labs(
+      title = "Demand, Wind Power Output and Dispatch of Gas Turbine",
+      x = "Time Index", y = "Power (MW)"
+      )
+```
+
+## Battery Energy Levels of Different EV Groups
+
+```{r, warning=FALSE, message=FALSE, fig.width = 7}
+ti_l_ev <-
+  read_csv(
+    "../results/2/mat_l_result.csv", col_names = as.character(seq(1, 20))
+    ) %>%
+  mutate(index = row_number()) %>%
+  gather(-index, key = "group", value = "level")
+
+ti_u_ev <-
+  read_csv(
+    "../results/2/mat_u_result.csv", col_names = as.character(seq(1, 20))
+    ) %>%
+  mutate(index = row_number()) %>%
+  gather(-index, key = "group", value = "diff")
+
+ti_ev <- 
+  right_join(ti_l_ev, ti_u_ev, by = c("index", "group")) %>%
+  mutate(g = as.numeric(group)) %>%
+  select(index, g, level, diff)
+
+ti_ev %>%
+  filter(g == 5 | g == 10 | g == 15) %>%  #
+  ggplot() + 
+    facet_grid(rows = vars(g)) +
+    geom_line(mapping = aes(x = index, y = level)) +
+    # geom_line(mapping = aes(x = index, y = diff)) +
+    geom_abline(aes(intercept = 0.07, slope = 0), color = "red") +
+    geom_abline(aes(intercept = 0.0028, slope = 0), color = "red") +
+    labs(
+      title = "Battery Energy Levels of Different EV Groups",
+      x = "Time Index", y = "Energy (MWh)"
+      )
+```
+
+

@@ -167,7 +167,7 @@ function get_data()
     vec_wind = CSV.read("../data/wind.csv")[!, 2]
     vec_c_fix = [441, 2541]
     vec_c_var = [0.4, 0.433]
-    c_fix_wind = 8000000 * 50  # !!! Cost of percent
+    c_fix_wind = 70000 # !!! Cost of percent 8000000 * 50
     vec_ramp_rate_max = [1, 0.6]
     vec_min_rate = [0.23, 0.5]
 
@@ -226,11 +226,8 @@ function main()
          writeheader = false
         )
     CSV.write(
-        "../results/mat_u_plus_result.csv", DataFrame(mat_u_plus_result'),
-        writeheader = false
-        )
-    CSV.write(
-        "../results/mat_u_minus_result.csv", DataFrame(mat_u_minus_result'),
+        "../results/mat_u_result.csv",
+        DataFrame(mat_u_plus_result' - mat_u_minus_result'),
         writeheader = false
         )
     CSV.write(
