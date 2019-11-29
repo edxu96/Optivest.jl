@@ -36,3 +36,4 @@ The water pit storage has a cost of 110 DKK/m3 while it is 700 DKK/m3 for the st
 - Besides to supply more heat during winter, heat pump can be used to lower the temperature before spring, so more heat during summer can be absorbed.
 - Over 50% of the heat loss happens in the top parts.
 - <https://www.solar-district-heating.eu>
+- <https://floweaver.readthedocs.io/en/latest/>

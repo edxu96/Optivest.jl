@@ -36,6 +36,8 @@ function print_result(model, vec_y, z)
 
     mat_result = [obj_result vec_y_result[1] vec_y_result[2] z_result]
     pretty_table(mat_result, ["obj" "y_gt" "y_biomass" "z"])
+
+    return mat_result
 end
 
 
@@ -73,11 +75,11 @@ function optim_mod_1(
     optimize!(model)
 
     ## Get the optimization result
-    print_result(model, vec_y, z)
+    mat_result = print_result(model, vec_y, z)
     # vec_result_u = dual_vec([vec_cons_1, vec_cons_2, vec_cons_3, vec_cons_4])
     mat_x_result = [value(mat_x[j, i]) for j = 1:2, i = 1:168]
 
-    return mat_x_result
+    return mat_x_result, mat_result
 end
 
 
@@ -150,21 +152,32 @@ function optim_mod_2(
     optimize!(model)
 
     ## Get the optimization result
-    print_result(model, vec_y, z)
+    mat_result = print_result(model, vec_y, z)
     # vec_result_u = dual_vec([vec_cons_1, vec_cons_2, vec_cons_3, vec_cons_4])
     mat_x_result = [value(mat_x[j, t]) for j = 1:2, t = 1:168]
     mat_u_plus_result = [value(mat_u_plus[g, t]) for g = 1:20, t = 1:168]
     mat_u_minus_result = [value(mat_u_minus[g, t]) for g = 1:20, t = 1:168]
     mat_l_result = [value(mat_l[g, t]) for g = 1:20, t = 1:168]
 
-    return mat_x_result, mat_u_plus_result, mat_u_minus_result, mat_l_result
+    return mat_x_result, mat_u_plus_result, mat_u_minus_result, mat_l_result, mat_result
 end
 
 
 function get_data()
     ## Data for wind output and demand
-    vec_demand = CSV.read("./data/demand.csv")[!, 2]
-    vec_wind = CSV.read("./data/wind.csv")[!, 2]
+    df_dk1 = CSV.read("./data/Electricity-Dispatch_DK1.csv")[1:8725, 1:9]
+    vec_demand = df_dk1[1:169, :TotalLoad]
+    vec_wind = df_dk1[1:169, 5] + df_dk1[1:169, 6]
+    for i in 1:169
+        if isequal(vec_demand[i], 1)
+            vec_demand[i] = (vec_demand[i+1] + vec_demand[i-1]) / 2
+        end
+        if isequal(vec_wind[i], 1)
+            vec_wind[i] = (vec_wind[i+1] + vec_wind[i-1]) / 2
+        end
+    end
+
+    ## Parameters
     vec_c_fix = [441, 2541]
     vec_c_var = [0.4, 0.433]
     c_fix_wind = 50000 # !!! Cost of percent 8000000 * 50
@@ -197,26 +210,29 @@ function get_data()
 end
 
 
-function main()
-    vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var, vec_ramp_rate_max,
-        vec_min_rate, vec_eta_plus, vec_eta_minus, vec_u_plus_max,
-        vec_u_minus_max, vec_l_min, vec_l_max, vec_num, mat_demand_ev =
-        get_data()
-
+function optim(vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var,
+        vec_ramp_rate_max, vec_min_rate, vec_eta_plus, vec_eta_minus,
+        vec_u_plus_max, vec_u_minus_max, vec_l_min, vec_l_max, vec_num,
+        mat_demand_ev, para
+        )
     ## Optimize model 1
-    mat_x_result_1 = optim_mod_1(
+    mat_x_result_1, mat_result_1 = optim_mod_1(
         vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var,
         vec_ramp_rate_max, vec_min_rate
         )
 
     CSV.write(
-        "./results/mat_x_result_1.csv", DataFrame(mat_x_result_1'),
+        "./results/" * string(para) * "/mat_x_result_1.csv", DataFrame(mat_x_result_1'),
+        writeheader = false
+        )
+    CSV.write(
+        "./results/" * string(para) * "/mat_result_1.csv", DataFrame(mat_result_1),
         writeheader = false
         )
 
     ## Optimize model 2
-    mat_x_result_2, mat_u_plus_result, mat_u_minus_result, mat_l_result =
-        optim_mod_2(
+    mat_x_result_2, mat_u_plus_result, mat_u_minus_result, mat_l_result,
+        mat_result_2 = optim_mod_2(
             vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var,
             vec_ramp_rate_max, vec_min_rate, vec_eta_plus, vec_eta_minus,
             vec_u_plus_max, vec_u_minus_max, vec_l_min, vec_l_max, vec_num,
@@ -224,18 +240,42 @@ function main()
             )
 
     CSV.write(
-        "./results/mat_x_result_2.csv", DataFrame(mat_x_result_2'),
+        "./results/" * string(para) * "/mat_x_result_2.csv", DataFrame(mat_x_result_2'),
          writeheader = false
         )
     CSV.write(
-        "./results/mat_u_result.csv",
+        "./results/" * string(para) * "/mat_u_result.csv",
         DataFrame(mat_u_plus_result' - mat_u_minus_result'),
         writeheader = false
         )
     CSV.write(
-        "./results/mat_l_result.csv", DataFrame(mat_l_result'),
+        "./results/" * string(para) * "/mat_l_result.csv", DataFrame(mat_l_result'),
         writeheader = false
         )
+    CSV.write(
+        "./results/" * string(para) * "/mat_result_2.csv", DataFrame(mat_result_2),
+        writeheader = false
+        )
+end
+
+
+function main()
+    vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var, vec_ramp_rate_max,
+        vec_min_rate, vec_eta_plus, vec_eta_minus, vec_u_plus_max,
+        vec_u_minus_max, vec_l_min, vec_l_max, vec_num, mat_demand_ev =
+        get_data()
+
+    c_fix_wind = missing
+    vec_c_fix_wind = [5000, 50000, 500000]
+
+    for i = 1:3
+        c_fix_wind = vec_c_fix_wind[i]
+        optim(vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var,
+            vec_ramp_rate_max, vec_min_rate, vec_eta_plus, vec_eta_minus,
+            vec_u_plus_max, vec_u_minus_max, vec_l_min, vec_l_max, vec_num,
+            mat_demand_ev, vec_c_fix_wind[i]
+            )
+    end
 end
 
 

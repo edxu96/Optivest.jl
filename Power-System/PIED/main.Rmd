@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
   comment = "#>",
   fig.align = "center",
   fig.asp = 9/16,
-  fig.width = 12,
+  fig.width = 5,
   warning = FALSE,
   message = FALSE
 )
@@ -35,57 +35,68 @@ library(knitr)
 The varying inputs and results are summarized in the following table.
 
 ```{r, echo=FALSE}
-ti_result <-
-  tibble(
-    c_fix_wind = 70000, whe_ev = F, obj = 1.5322e6, y_gt = 3115.9466, 
-    y_bio = 0, z = 0.5041
-    ) %>%
-  add_row(
-    c_fix_wind = 70000, whe_ev = T, obj = 1.4130e6, y_gt = 2839.5221, 
-    y_bio = 0, z = 0.5938
-    ) %>%
-  add_row(
-    c_fix_wind = 500000, whe_ev = F, obj = 1.5575e6, y_gt = 3207.64, 
-    y_bio = 0, z = 0
-    ) %>%
-  add_row(
-    c_fix_wind = 500000, whe_ev = T, obj = 1.4212e6, y_gt = 2898.5735, 
-    y_bio = 0, z = 0
-    ) %>%
-  add_row(
-    c_fix_wind = 50000, whe_ev = F, obj = 1.5170e6, y_gt = 3079.5, 
-    y_bio = 0, z = 1.0
-    ) %>%
-  add_row(
-    c_fix_wind = 50000, whe_ev = T, obj = 1.3961e6, y_gt = 2808.4001, 
-    y_bio = 0, z = 1.0
-    )
-
-ti_result %>%
-  kable(caption = "Table 1, Varying Inputs and Optimization Results") %>%
-  kable_styling(
-    bootstrap_options = "striped", full_width = F, position = "center"
-    )
+# ti_result <-
+#   tibble(
+#     c_fix_wind = 70000, whe_ev = F, obj = 1.5322e6, y_gt = 3115.9466, 
+#     y_bio = 0, z = 0.5041
+#     ) %>%
+#   add_row(
+#     c_fix_wind = 70000, whe_ev = T, obj = 1.4130e6, y_gt = 2839.5221, 
+#     y_bio = 0, z = 0.5938
+#     ) %>%
+#   add_row(
+#     c_fix_wind = 500000, whe_ev = F, obj = 1.5575e6, y_gt = 3207.64, 
+#     y_bio = 0, z = 0
+#     ) %>%
+#   add_row(
+#     c_fix_wind = 500000, whe_ev = T, obj = 1.4212e6, y_gt = 2898.5735, 
+#     y_bio = 0, z = 0
+#     ) %>%
+#   add_row(
+#     c_fix_wind = 50000, whe_ev = F, obj = 1.5170e6, y_gt = 3079.5, 
+#     y_bio = 0, z = 1.0
+#     ) %>%
+#   add_row(
+#     c_fix_wind = 50000, whe_ev = T, obj = 1.3961e6, y_gt = 2808.4001, 
+#     y_bio = 0, z = 1.0
+#     )
+# 
+# ti_result %>%
+#   kable(caption = "Table 1, Varying Inputs and Optimization Results") %>%
+#   kable_styling(
+#     bootstrap_options = "striped", full_width = F, position = "center"
+#     )
 ```
 
 ## 2, Demand, Wind Power Output, Dispatch of GT and Bio under Different `c_fix_wind`
 
-When `c_fix_wind` = 500000. Notice that the demand is satisfied entirely by gas turbine.
+```{r}
+ti_dk1 <- 
+  read_csv2("./data/Electricity-Dispatch_DK1.csv") %>%
+  mutate(OffshoreWindPower = as.numeric(OffshoreWindPower)) %>%
+  mutate(TotalLoad = TotalLoad / 100) %>%
+  mutate(OnshoreWindPower = OnshoreWindPower / 100)
+```
 
-```{r, warning=FALSE, message=FALSE, fig.width = 7}
+
+When `c_fix_wind` = 5000. 
+
+```{r, warning=FALSE, message=FALSE, fig.width = 5}
 ti_3 <- 
-  read_csv("./results/3/mat_x_result_1.csv", col_names = c("gt", "bio")) %>%
+  read_csv("./results/5000/mat_x_result_1.csv", col_names = c("gt", "bio")) %>%
   mutate(index = row_number()) %>%
-  bind_cols(read_csv("./data/demand.csv")[,2]) %>%
-  bind_cols(read_csv("./data/wind.csv")[,2]) %>%
+  bind_cols(ti_dk1[1:168, 4]) %>%
+  bind_cols(ti_dk1[1:168, 5:6]) %>%
+  mutate(wind = OnshoreWindPower + OffshoreWindPower) %>%
+  mutate(demand = TotalLoad) %>%
   select(index, demand, wind, gt)
 
 ti_3 %>%
   gather(-index, key = "whi", value = "power") %>%
   ggplot() + 
     geom_line(mapping = aes(x = index, y = power, color = whi)) +
-    geom_abline(aes(intercept = 3208, slope = 0), color = "black") +
-    geom_abline(aes(intercept = 3208 * 0.23, slope = 0), color = "black") +
+    geom_abline(aes(intercept = 2734.75, slope = 0), color = "black") +
+    geom_abline(aes(intercept = 2734.75 * 0.23, slope = 0), color = "black") +
     labs(
       title = "Demand, Wind Power Output, Dispatch of GT and Bio",
       x = "Time Index", y = "Power (MW)"
@@ -94,12 +105,12 @@ ti_3 %>%
 
 When `c_fix_wind` = 70000.
 
-```{r, message = FALSE, fig.width = 7}
+```{r, message = FALSE, fig.width = 5}
 ti <- 
   read_csv("./results/2/mat_x_result_1.csv", col_names = c("gt", "bio")) %>%
   mutate(index = row_number()) %>%
-  bind_cols(read_csv("./data/demand.csv")[,2]) %>%
-  bind_cols(read_csv("./data/wind.csv")[,2]) %>%
+  bind_cols(ti_dk1[4]) %>%
+  bind_cols(ti_dk1[5] + ti_dk1[6]) %>%
   select(index, demand, wind, gt)
 
 ti %>%
@@ -116,12 +127,12 @@ ti %>%
 
 When `c_fix_wind` = 50000.
 
-```{r, message = FALSE, fig.width = 7}
+```{r, message = FALSE, fig.width = 5}
 ti_1 <- 
   read_csv("./results/1/mat_x_result_1.csv", col_names = c("gt", "bio")) %>%
   mutate(index = row_number()) %>%
-  bind_cols(read_csv("./data/demand.csv")[,2]) %>%
-  bind_cols(read_csv("./data/wind.csv")[,2]) %>%
+  bind_cols(ti_dk1[4]) %>%
+  bind_cols(ti_dk1[5] + ti_dk1[6]) %>%
   select(index, demand, wind, gt)
 
 ti_1 %>%
@@ -138,12 +149,12 @@ ti_1 %>%
 
 ## 3, Battery Energy Levels of Different EV Groups when `c_fix_wind` = 70000
 
-```{r, message = FALSE, fig.width = 7}
+```{r, message = FALSE, fig.width = 5}
 ti <- 
   read_csv("./results/2/mat_x_result_2.csv", col_names = c("gt", "bio")) %>%
   mutate(index = row_number()) %>%
-  bind_cols(read_csv("./data/demand.csv")[,2]) %>%
-  bind_cols(read_csv("./data/wind.csv")[,2]) %>%
+  bind_cols(ti_dk1[4]) %>%
+  bind_cols(ti_dk1[5] + ti_dk1[6]) %>%
   select(index, demand, wind, gt)
 
 ti %>%
@@ -159,7 +170,7 @@ ti %>%
 ```
 
 
-```{r, message = FALSE, fig.width = 7}
+```{r, message = FALSE, fig.width = 5}
 ti_l_ev <-
   read_csv(
     "./results/2/mat_l_result.csv", col_names = as.character(seq(1, 20))
@@ -190,6 +201,50 @@ ti_ev %>%
     labs(
       title = "Battery Energy Levels of Different EV Groups",
       x = "Time Index", y = "Energy (MWh)"
+      )
+```
+
+When `c_fix_wind` = 500000.
+
+```{r, message = FALSE, fig.width = 5}
+ti <- 
+  read_csv("./results/1/mat_x_result_2.csv", col_names = c("gt", "bio")) %>%
+  mutate(index = row_number()) %>%
+  bind_cols(ti_dk1[4]) %>%
+  bind_cols(ti_dk1[5] + ti_dk1[6]) %>%
+  select(index, demand, wind, gt)
+
+ti %>%
+  gather(-index, key = "whi", value = "power") %>%
+  ggplot() + 
+    geom_line(mapping = aes(x = index, y = power, color = whi)) +
+    geom_abline(aes(intercept = 3208, slope = 0), color = "black") +
+    geom_abline(aes(intercept = 3208 * 0.23, slope = 0), color = "black") +
+    labs(
+      title = "Demand, Wind Power Output, Dispatch of GT and Bio",
+      x = "Time Index", y = "Power (MW)"
+      )
+```
+
+When `c_fix_wind` = 50000.
+
+```{r, message = FALSE, fig.width = 5}
+ti <- 
+  read_csv("./results/3/mat_x_result_2.csv", col_names = c("gt", "bio")) %>%
+  mutate(index = row_number()) %>%
+  bind_cols(ti_dk1[4]) %>%
+  bind_cols(ti_dk1[5] + ti_dk1[6]) %>%
+  select(index, demand, wind, gt)
+
+ti %>%
+  gather(-index, key = "whi", value = "power") %>%
+  ggplot() + 
+    geom_line(mapping = aes(x = index, y = power, color = whi)) +
+    geom_abline(aes(intercept = 3208, slope = 0), color = "black") +
+    geom_abline(aes(intercept = 3208 * 0.23, slope = 0), color = "black") +
+    labs(
+      title = "Demand, Wind Power Output, Dispatch of GT and Bio",
+      x = "Time Index", y = "Power (MW)"
       )
 ```
 
