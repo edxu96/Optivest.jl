@@ -163,11 +163,11 @@ end
 
 function get_data()
     ## Data for wind output and demand
-    vec_demand = CSV.read("../data/demand.csv")[!, 2]
-    vec_wind = CSV.read("../data/wind.csv")[!, 2]
+    vec_demand = CSV.read("./data/demand.csv")[!, 2]
+    vec_wind = CSV.read("./data/wind.csv")[!, 2]
     vec_c_fix = [441, 2541]
     vec_c_var = [0.4, 0.433]
-    c_fix_wind = 70000 # !!! Cost of percent 8000000 * 50
+    c_fix_wind = 50000 # !!! Cost of percent 8000000 * 50
     vec_ramp_rate_max = [1, 0.6]
     vec_min_rate = [0.23, 0.5]
 
@@ -183,9 +183,9 @@ function get_data()
 
     ## Data for driving patterns
     mat_demand_weekend =
-        CSV.read("../data/demand-EV_weekend.csv")[1:20, 1:24] .* 0.0001666
+        CSV.read("./data/demand-EV_weekend.csv")[1:20, 1:24] .* 0.0001666
     mat_demand_weekday =
-        CSV.read("../data/demand-EV_weekday.csv")[1:20, 1:24] .* 0.0001666
+        CSV.read("./data/demand-EV_weekday.csv")[1:20, 1:24] .* 0.0001666
     mat_demand_ev = hcat(mat_demand_weekday, mat_demand_weekday,
         mat_demand_weekday, mat_demand_weekday, mat_demand_weekday,
         mat_demand_weekend, mat_demand_weekend, makeunique = true)
@@ -208,8 +208,9 @@ function main()
         vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var,
         vec_ramp_rate_max, vec_min_rate
         )
+
     CSV.write(
-        "../results/mat_x_result_1.csv", DataFrame(mat_x_result_1'),
+        "./results/mat_x_result_1.csv", DataFrame(mat_x_result_1'),
         writeheader = false
         )
 
@@ -221,17 +222,18 @@ function main()
             vec_u_plus_max, vec_u_minus_max, vec_l_min, vec_l_max, vec_num,
             mat_demand_ev
             )
+
     CSV.write(
-        "../results/mat_x_result_2.csv", DataFrame(mat_x_result_2'),
+        "./results/mat_x_result_2.csv", DataFrame(mat_x_result_2'),
          writeheader = false
         )
     CSV.write(
-        "../results/mat_u_result.csv",
+        "./results/mat_u_result.csv",
         DataFrame(mat_u_plus_result' - mat_u_minus_result'),
         writeheader = false
         )
     CSV.write(
-        "../results/mat_l_result.csv", DataFrame(mat_l_result'),
+        "./results/mat_l_result.csv", DataFrame(mat_l_result'),
         writeheader = false
         )
 end
