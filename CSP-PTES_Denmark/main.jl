@@ -43,18 +43,21 @@ end
 # end
 
 
+"""
+Calculate the new t_cover using the assumed t_cover.
+"""
 function cal_t_cover(
 		t_cover, t_ambient, t_sky, h_convec, epsilon_cover, sigma, k_insu,
 		d_cover, t_ptes
 		)
 	##
-	q_radia = epsilon_cover * sigma * (t_cover + t_sky) *
-		(t_cover^2 + t_sky^2) * (t_cover - t_sky)
+	q_radia = epsilon_cover * sigma * (t_cover^2 - t_sky^2) *
+		(t_cover^2 + t_sky^2)
 
-	t_cover = (k_insu / d_cover * t_ptes + h_convec * t_ambient - q_radia) /
+	t_cover_new = (k_insu / d_cover * t_ptes + h_convec * t_ambient - q_radia) /
 		(k_insu / d_cover + h_convec)
 
-	return t_cover
+	return t_cover_new
 end
 
 
