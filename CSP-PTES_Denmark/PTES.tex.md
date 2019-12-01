@@ -72,12 +72,16 @@ $$
 M_{final} = \frac{M_{\text{str}} - M_{\text{exp}}}{M_{\text{str}}-M_{\text{mix}}}
 $$
 
+Three $M$ can be calculated using the following equation:
+
 $$
 M = \sum_{i=1}^{N} y_{i} c_{i} \rho_{i} V_{i} T_{i}
 $$
 
+where $y_{i}$ is the distance between the middle level and the bottom of the tank. and $c_{p}$ varies according to the following equation.
+
 $$
-C = 4209.1 - 1.328 T + 0.01432 T^{2} \quad \text{J/kgK}
+c_{p} = 4209.1 - 1.328 T + 0.01432 T^{2} \quad \text{J/kgK}
 $$
 
 ## 6, Thermal Energy Storage in the Tank
