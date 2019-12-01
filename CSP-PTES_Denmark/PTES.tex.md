@@ -15,7 +15,7 @@ $$
 \end{align}
 $$
 
-The time $t$ needed to cool the water down from $t_0$ to $t_1$ can be integrated from the above equation.
+The time $t$ needed to cool the water down from $T_0$ to $T_1$ can be integrated from the above equation.
 
 $$
 t = - \frac{c_{p} m}{U_{air} A_{air} + U_{soil} A_{soil}} \ln\left(\frac{T_t - T_a^{*}}{T_{0} - T_a^{*}} \right)
@@ -40,7 +40,7 @@ $$
 
 where $R_{A}$ is the thermal resistance.
 
-## Thermal Stratification
+## 4, Thermal Stratification
 
 Calculate discharge/charge efficiency of PTES from $t_0$ to $t_1$.
 
@@ -66,24 +66,28 @@ $$
 
 where $T_{\text{average-in}}$ is the average inlet temperature during the experiment.
 
-## Mix Number
+## 5, Mix Number
 
 $$
 M_{final} = \frac{M_{\text{str}} - M_{\text{exp}}}{M_{\text{str}}-M_{\text{mix}}}
 $$
 
 $$
-M=\sum_{i=1}^{N} y_{i} c_{i} \rho_{i} V_{i} T_{i}
+M = \sum_{i=1}^{N} y_{i} c_{i} \rho_{i} V_{i} T_{i}
 $$
 
-## Thermal Energy Storage in the Tank
+$$
+C = 4209.1 - 1.328 T + 0.01432 T^{2} \quad \text{J/kgK}
+$$
+
+## 6, Thermal Energy Storage in the Tank
 
 The heat storage capacity of the hot water tanks consists of two parts, that of water and that of steel.
 
 - At a typical tank temperature of 70 C, the specific heat of water is 4190 J / kg K and the density of water is 978 kg / m3.
 - The specific heat of steel is 460 J / kg K and the density of steel is 7850 kg / m3.
 
-## Potential Energy of Water
+## 7, Potential Energy of Water
 
 $$
 \begin{align}
@@ -91,10 +95,4 @@ $$
 	\rho &= 1000.6 - 0.0128 T^{1.76} \quad \text{kg / m3} \\
 	g &= 9.82 \quad \text{N / kg}
 \end{align}
-$$
-
-## Mix Number
-
-$$
-C = 4209.1 - 1.328 T + 0.01432 T^{2} \quad \text{J/kgK}
 $$
