@@ -43,9 +43,13 @@ where <img src="/CSP-PTES_Denmark/tex/a01ab6290011b54ff608a197ccb4ac32.svg?inver
 
 <p align="center"><img src="/CSP-PTES_Denmark/tex/7b77b2d3b20f03137eb97362d97e1dc7.svg?invert_in_darkmode&sanitize=true" align=middle width=163.029471pt height=36.09514755pt/></p>
 
+Three <img src="/CSP-PTES_Denmark/tex/fb97d38bcc19230b0acd442e17db879c.svg?invert_in_darkmode&sanitize=true" align=middle width=17.73973739999999pt height=22.465723500000017pt/> can be calculated using the following equation:
+
 <p align="center"><img src="/CSP-PTES_Denmark/tex/6e9e79121a426cdb7e85f2e80aae4b86.svg?invert_in_darkmode&sanitize=true" align=middle width=135.55078845pt height=47.806078649999996pt/></p>
 
-<p align="center"><img src="/CSP-PTES_Denmark/tex/fb47c9f9c5fa3f6455e67a98ff11b7a8.svg?invert_in_darkmode&sanitize=true" align=middle width=305.9501346pt height=18.312383099999998pt/></p>
+where <img src="/CSP-PTES_Denmark/tex/e46f5aa3f3f039ebf21a80fd0cf8fad9.svg?invert_in_darkmode&sanitize=true" align=middle width=12.710331149999991pt height=14.15524440000002pt/> is the distance between the middle level and the bottom of the tank. and <img src="/CSP-PTES_Denmark/tex/718d4a9e99a84cde65c94ce39602d379.svg?invert_in_darkmode&sanitize=true" align=middle width=13.89028244999999pt height=14.15524440000002pt/> varies according to the following equation.
+
+<p align="center"><img src="/CSP-PTES_Denmark/tex/3d3646ba3ebcfbc35d91ed2a407aa518.svg?invert_in_darkmode&sanitize=true" align=middle width=307.73767695pt height=18.905967299999997pt/></p>
 
 ## 6, Thermal Energy Storage in the Tank
 
