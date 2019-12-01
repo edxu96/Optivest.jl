@@ -82,3 +82,19 @@ The heat storage capacity of the hot water tanks consists of two parts, that of 
 
 - At a typical tank temperature of 70 C, the specific heat of water is 4190 J / kg K and the density of water is 978 kg / m3.
 - The specific heat of steel is 460 J / kg K and the density of steel is 7850 kg / m3.
+
+## Potential Energy of Water
+
+$$
+\begin{align}
+	E_{\text{potential}} &= \rho g h \\
+	\rho &= 1000.6 - 0.0128 T^{1.76} \quad \text{kg / m3} \\
+	g &= 9.82 \quad \text{N / kg}
+\end{align}
+$$
+
+## Mix Number
+
+$$
+C = 4209.1 - 1.328 T + 0.01432 T^{2} \quad \text{J/kgK}
+$$
