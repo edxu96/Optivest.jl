@@ -9,7 +9,7 @@
 
 <p align="center"><img src="/CSP-PTES_Denmark/tex/b71628c5bd3e81157341128256e4c565.svg?invert_in_darkmode&sanitize=true" align=middle width=389.10603764999996pt height=33.81208709999999pt/></p>
 
-The time <img src="/CSP-PTES_Denmark/tex/4f4f4e395762a3af4575de74c019ebb5.svg?invert_in_darkmode&sanitize=true" align=middle width=5.936097749999991pt height=20.221802699999984pt/> needed to cool the water down from <img src="/CSP-PTES_Denmark/tex/6df6ddacc987bd7a5070beafef47fcc1.svg?invert_in_darkmode&sanitize=true" align=middle width=12.48864374999999pt height=20.221802699999984pt/> to <img src="/CSP-PTES_Denmark/tex/4ad941990ade99427ec9730e46ddcdd4.svg?invert_in_darkmode&sanitize=true" align=middle width=12.48864374999999pt height=20.221802699999984pt/> can be integrated from the above equation.
+The time <img src="/CSP-PTES_Denmark/tex/4f4f4e395762a3af4575de74c019ebb5.svg?invert_in_darkmode&sanitize=true" align=middle width=5.936097749999991pt height=20.221802699999984pt/> needed to cool the water down from <img src="/CSP-PTES_Denmark/tex/9d779a2b4b1c9b861e2bdcc4fdc5f682.svg?invert_in_darkmode&sanitize=true" align=middle width=16.15873379999999pt height=22.465723500000017pt/> to <img src="/CSP-PTES_Denmark/tex/b1aadae6dafc7da339f61626db58e355.svg?invert_in_darkmode&sanitize=true" align=middle width=16.15873379999999pt height=22.465723500000017pt/> can be integrated from the above equation.
 
 <p align="center"><img src="/CSP-PTES_Denmark/tex/8955868061be073576a88cddaeb50627.svg?invert_in_darkmode&sanitize=true" align=middle width=298.52317275pt height=39.452455349999994pt/></p>
 
@@ -25,7 +25,7 @@ The heat conduction over a plate can be expressed by:
 
 where <img src="/CSP-PTES_Denmark/tex/6d8e781da58da5220a8ebfba0e7aacb6.svg?invert_in_darkmode&sanitize=true" align=middle width=22.367386799999988pt height=22.465723500000017pt/> is the thermal resistance.
 
-## Thermal Stratification
+## 4, Thermal Stratification
 
 Calculate discharge/charge efficiency of PTES from <img src="/CSP-PTES_Denmark/tex/6df6ddacc987bd7a5070beafef47fcc1.svg?invert_in_darkmode&sanitize=true" align=middle width=12.48864374999999pt height=20.221802699999984pt/> to <img src="/CSP-PTES_Denmark/tex/4ad941990ade99427ec9730e46ddcdd4.svg?invert_in_darkmode&sanitize=true" align=middle width=12.48864374999999pt height=20.221802699999984pt/>.
 
@@ -39,15 +39,21 @@ Calculate discharge/charge efficiency of PTES from <img src="/CSP-PTES_Denmark/t
 
 where <img src="/CSP-PTES_Denmark/tex/a01ab6290011b54ff608a197ccb4ac32.svg?invert_in_darkmode&sanitize=true" align=middle width=67.70010389999999pt height=22.465723500000017pt/> is the average inlet temperature during the experiment.
 
-## Mix Number
+## 5, Mix Number
 
 <p align="center"><img src="/CSP-PTES_Denmark/tex/7b77b2d3b20f03137eb97362d97e1dc7.svg?invert_in_darkmode&sanitize=true" align=middle width=163.029471pt height=36.09514755pt/></p>
 
-<p align="center"><img src="/CSP-PTES_Denmark/tex/0ed1db4602ada6909c0aaadb9ef243e0.svg?invert_in_darkmode&sanitize=true" align=middle width=135.55078845pt height=47.806078649999996pt/></p>
+<p align="center"><img src="/CSP-PTES_Denmark/tex/6e9e79121a426cdb7e85f2e80aae4b86.svg?invert_in_darkmode&sanitize=true" align=middle width=135.55078845pt height=47.806078649999996pt/></p>
 
-## Thermal Energy Storage in the Tank
+<p align="center"><img src="/CSP-PTES_Denmark/tex/fb47c9f9c5fa3f6455e67a98ff11b7a8.svg?invert_in_darkmode&sanitize=true" align=middle width=305.9501346pt height=18.312383099999998pt/></p>
+
+## 6, Thermal Energy Storage in the Tank
 
 The heat storage capacity of the hot water tanks consists of two parts, that of water and that of steel.
 
 - At a typical tank temperature of 70 C, the specific heat of water is 4190 J / kg K and the density of water is 978 kg / m3.
 - The specific heat of steel is 460 J / kg K and the density of steel is 7850 kg / m3.
+
+## 7, Potential Energy of Water
+
+<p align="center"><img src="/CSP-PTES_Denmark/tex/3bd6b7d5050fd3c17ca4e8526a2cdfc5.svg?invert_in_darkmode&sanitize=true" align=middle width=308.17979445pt height=66.8786514pt/></p>
