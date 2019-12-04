@@ -65,21 +65,12 @@ end
 function optim(vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var,
         vec_ramp_rate_max, vec_min_rate, vec_eta_plus, vec_eta_minus,
         vec_u_plus_max, vec_u_minus_max, vec_l_min, vec_l_max, vec_num,
-        mat_demand_ev, para
+        mat_demand_ev,
         )
     ## Optimize model 1
     mat_x_result_1, mat_result_1 = optim_mod_1(
         vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var,
         vec_ramp_rate_max, vec_min_rate
-        )
-
-    CSV.write(
-        "./results/" * string(para) * "/mat_x_result_1.csv", DataFrame(mat_x_result_1'),
-        writeheader = false
-        )
-    CSV.write(
-        "./results/" * string(para) * "/mat_result_1.csv", DataFrame(mat_result_1),
-        writeheader = false
         )
 
     ## Optimize model 2
@@ -91,6 +82,22 @@ function optim(vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var,
             mat_demand_ev
             )
 
+    return mat_x_result_1, mat_result_1, mat_x_result_2, mat_u_plus_result,
+        mat_u_minus_result, mat_l_result, mat_result_2
+end
+
+
+function export(name_para, para)
+    CSV.write(
+        "./results/" * name_para * "/" *  string(para) * "/mat_x_result_1.csv",
+        DataFrame(mat_x_result_1'), writeheader = false
+        )
+    CSV.write(
+        "./results/" * string(para) * "/mat_result_1.csv", DataFrame(mat_result_1),
+        writeheader = false
+        )
+
+    ## Store
     CSV.write(
         "./results/" * string(para) * "/mat_x_result_2.csv", DataFrame(mat_x_result_2'),
          writeheader = false
@@ -138,8 +145,15 @@ function main()
         vec_u_minus_max, vec_l_min, vec_l_max, vec_num, mat_demand_ev =
         get_data()
 
+    ## Optimize using default data
+    optim(vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var,
+        vec_ramp_rate_max, vec_min_rate, vec_eta_plus, vec_eta_minus,
+        vec_u_plus_max, vec_u_minus_max, vec_l_min, vec_l_max, vec_num,
+        mat_demand_ev, c_fix_wind
+        )
+
     ## Do sensitity analysis
-    analyze_sense()
+    # analyze_sense()
 end
 
 
