@@ -1,6 +1,6 @@
 ## Julia Script for Optimization Model in 42002 Group Project
 ## Edward J. Xu (edxu96@outlook.com)
-## Dec 4th, 2019
+## Dec 6th, 2019
 
 
 function value_vec(vec_x::Union{Array{VariableRef,1}, VariableRef})
@@ -25,7 +25,7 @@ function print_result(model, vec_y, z)
     z_result = value(z)
 
     mat_result = [obj_result vec_y_result[1] vec_y_result[2] z_result]
-    pretty_table(mat_result, ["obj" "y_gt" "y_biomass" "z"])
+    pretty_table(mat_result, ["obj" "y_gt" "y_bio" "z"])
 
     return mat_result
 end
@@ -45,8 +45,8 @@ function optim_mod_1(
     @variable(model, 0 <= z <= 1)
 
     @objective(model, Min,
-        sum(mat_x[i, t] * vec_c_var[i] for i = 1:2, t = 1:num_unit) +
-        sum(vec_y[i] * vec_c_fix[i] for i = 1:2) +
+        sum(mat_x[i, t] * vec_c_var[i] for i = 1:2, t = 1:num_unit) /
+        num_unit * 365 + sum(vec_y[i] * vec_c_fix[i] for i = 1:2) +
         c_fix_wind * z
         )
     @constraint(model, mat_cons_1[j = 1:2, t = 1:(num_unit - 1)],
@@ -95,9 +95,9 @@ function optim_mod_2(
     @variable(model, mat_l[1:20, 1:num_unit] >= 0)
 
     @objective(model, Min,
-        sum(mat_x[i, t] * vec_c_var[i] for i = 1:2, t = 1:num_unit) +
-            sum(vec_y[i] * vec_c_fix[i] for i = 1:2) +
-            c_fix_wind * z
+        sum(mat_x[i, t] * vec_c_var[i] for i = 1:2, t = 1:num_unit) /
+        num_unit * 365 + sum(vec_y[i] * vec_c_fix[i] for i = 1:2) +
+        c_fix_wind * z
         )
 
     ## Basic constraints
@@ -155,30 +155,4 @@ function optim_mod_2(
     mat_l_result = [value(mat_l[g, t]) for g = 1:20, t = 1:num_unit]
 
     return mat_x_result, mat_u_plus_result, mat_u_minus_result, mat_l_result, mat_result
-end
-
-
-"Optimize model 1 and model 2, export the results"
-function optim(vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var,
-        vec_ramp_rate_max, vec_min_rate, vec_eta_plus, vec_eta_minus,
-        vec_u_plus_max, vec_u_minus_max, vec_l_min, vec_l_max, vec_num,
-        mat_demand_ev, num_unit
-        )
-    ## Optimize model 1
-    mat_x_result_1, mat_result_1 = optim_mod_1(
-        vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var,
-        vec_ramp_rate_max, vec_min_rate, num_unit
-        )
-
-    ## Optimize model 2
-    mat_x_result_2, mat_u_plus_result, mat_u_minus_result, mat_l_result,
-        mat_result_2 = optim_mod_2(
-            vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var,
-            vec_ramp_rate_max, vec_min_rate, vec_eta_plus, vec_eta_minus,
-            vec_u_plus_max, vec_u_minus_max, vec_l_min, vec_l_max, vec_num,
-            mat_demand_ev, num_unit
-            )
-
-    return mat_x_result_1, mat_result_1, mat_x_result_2, mat_u_plus_result,
-        mat_u_minus_result, mat_l_result, mat_result_2
 end
