@@ -156,3 +156,29 @@ function optim_mod_2(
 
     return mat_x_result, mat_u_plus_result, mat_u_minus_result, mat_l_result, mat_result
 end
+
+
+"Optimize model 1 and model 2, export the results"
+function optim(vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var,
+        vec_ramp_rate_max, vec_min_rate, vec_eta_plus, vec_eta_minus,
+        vec_u_plus_max, vec_u_minus_max, vec_l_min, vec_l_max, vec_num,
+        mat_demand_ev, num_unit
+        )
+    ## Optimize model 1
+    mat_x_result_1, mat_result_1 = optim_mod_1(
+        vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var,
+        vec_ramp_rate_max, vec_min_rate, num_unit
+        )
+
+    ## Optimize model 2
+    mat_x_result_2, mat_u_plus_result, mat_u_minus_result, mat_l_result,
+        mat_result_2 = optim_mod_2(
+            vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var,
+            vec_ramp_rate_max, vec_min_rate, vec_eta_plus, vec_eta_minus,
+            vec_u_plus_max, vec_u_minus_max, vec_l_min, vec_l_max, vec_num,
+            mat_demand_ev, num_unit
+            )
+
+    return mat_x_result_1, mat_result_1, mat_x_result_2, mat_u_plus_result,
+        mat_u_minus_result, mat_l_result, mat_result_2
+end

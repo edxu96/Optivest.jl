@@ -1,5 +1,5 @@
 ---
-title: "Production Investment and Economic Dispatch in Renewable Energy System"
+title: "Production Investment and Economic Dispatch in Sustainble Energy System"
 output: html_notebook
 author: Edward J. Xu (<edxu96@outlook.com>)
 date: "`r Sys.Date()`"
@@ -30,47 +30,7 @@ library(kableExtra)
 library(knitr)
 ```
 
-## 1, Result
-
-The varying inputs and results are summarized in the following table.
-
-```{r, echo=FALSE}
-# ti_result <-
-#   tibble(
-#     c_fix_wind = 70000, whe_ev = F, obj = 1.5322e6, y_gt = 3115.9466, 
-#     y_bio = 0, z = 0.5041
-#     ) %>%
-#   add_row(
-#     c_fix_wind = 70000, whe_ev = T, obj = 1.4130e6, y_gt = 2839.5221, 
-#     y_bio = 0, z = 0.5938
-#     ) %>%
-#   add_row(
-#     c_fix_wind = 500000, whe_ev = F, obj = 1.5575e6, y_gt = 3207.64, 
-#     y_bio = 0, z = 0
-#     ) %>%
-#   add_row(
-#     c_fix_wind = 500000, whe_ev = T, obj = 1.4212e6, y_gt = 2898.5735, 
-#     y_bio = 0, z = 0
-#     ) %>%
-#   add_row(
-#     c_fix_wind = 50000, whe_ev = F, obj = 1.5170e6, y_gt = 3079.5, 
-#     y_bio = 0, z = 1.0
-#     ) %>%
-#   add_row(
-#     c_fix_wind = 50000, whe_ev = T, obj = 1.3961e6, y_gt = 2808.4001, 
-#     y_bio = 0, z = 1.0
-#     )
-# 
-# ti_result %>%
-#   kable(caption = "Table 1, Varying Inputs and Optimization Results") %>%
-#   kable_styling(
-#     bootstrap_options = "striped", full_width = F, position = "center"
-#     )
-```
-
-## 2, Demand, Wind Power Output, Dispatch of GT and Bio under Different `c_fix_wind`
-
-```{r}
+```{r, message=FALSE}
 ti_dk1 <- 
   read_csv2("./data/Electricity-Dispatch_DK1.csv") %>%
   mutate(OffshoreWindPower = as.numeric(OffshoreWindPower)) %>%
@@ -78,85 +38,81 @@ ti_dk1 <-
   mutate(OnshoreWindPower = OnshoreWindPower / 100)
 ```
 
-When `c_fix_wind` = 5000. 
+```{r}
+get_result_dispatch <- function(str_file, z){
+  ti <-
+    read_csv(str_file, col_names = c("gt", "bio")) %>%
+    mutate(index = row_number()) %>%
+    bind_cols(ti_dk1[1:168, 4]) %>%
+    bind_cols(ti_dk1[1:168, 5:6]) %>%
+    mutate(wind_total = (OnshoreWindPower + OffshoreWindPower) * z) %>%
+    mutate(demand = TotalLoad) %>%
+    mutate(wind_net = demand - gt - bio) %>%
+    select(index, demand, wind_total, wind_net, gt, bio)
 
-```{r, warning=FALSE, message=FALSE, fig.width = 5}
-ti_3 <- 
-  read_csv("./results/5000/mat_x_result_1.csv", col_names = c("gt", "bio")) %>%
-  mutate(index = row_number()) %>%
-  bind_cols(ti_dk1[1:168, 4]) %>%
-  bind_cols(ti_dk1[1:168, 5:6]) %>%
-  mutate(wind = OnshoreWindPower + OffshoreWindPower) %>%
-  mutate(demand = TotalLoad) %>%
-  select(index, demand, wind, gt)
+  return(ti)
+}
 
-ti_3 %>%
-  gather(-index, key = "whi", value = "power") %>%
-  ggplot() + 
-    geom_line(mapping = aes(x = index, y = power, color = whi)) +
-    geom_abline(aes(intercept = 2734.75, slope = 0), color = "black") +
-    geom_abline(aes(intercept = 2734.75 * 0.23, slope = 0), color = "black") +
-    labs(
-      title = "Demand, Wind Power Output, Dispatch of GT and Bio",
-      x = "Time Index", y = "Power (MW)"
-      )
+plot_dispatch <- function(ti, y_gt, y_bio){
+  ti %>%
+    gather(-index, key = "whi", value = "power") %>%
+    ggplot() + 
+      geom_line(mapping = aes(x = index, y = power, color = whi)) +
+      geom_hline(yintercept = y_gt, color = "grey", linetype = "dashed") +
+      geom_hline(yintercept = y_gt * 0.23, color = "grey", linetype = "dashed") +
+      geom_hline(yintercept = y_bio, color = "grey", linetype = "dashed") +
+      geom_hline(yintercept = y_bio * 0.5, color = "grey", linetype = "dashed") +
+      labs(
+        title = "Demand, Wind Power Output, Dispatch of GT and Bio",
+        x = "Time Index", y = "Power (MW)"
+        )
+}
+
+plot_dispatch_stack <- function(ti){
+  ti %>%
+    select(index, bio, gt, wind_net) %>%
+    gather(-index, key = "whi", value = "power") %>%
+    ggplot() +
+      geom_area(mapping = aes(x = index, y = power, fill = whi)) +
+      labs(
+        title = "Stacked Area Plot of Wind Power Output, Dispatch of GT and Bio",
+        x = "Time Index", y = "Power (MW)"
+        )
+}
 ```
 
-## 3, Battery Energy Levels of Different EV Groups when `c_fix_wind` = 70000
 
-```{r, message = FALSE, fig.width = 5}
+## 1, Results of the Model without Storage Devices
+
+```{r, message=FALSE}
 ti <- 
-  read_csv("./results/2/mat_x_result_2.csv", col_names = c("gt", "bio")) %>%
-  mutate(index = row_number()) %>%
-  bind_cols(ti_dk1[4]) %>%
-  bind_cols(ti_dk1[5] + ti_dk1[6]) %>%
-  select(index, demand, wind, gt)
+  get_result_dispatch("./results/c_fix_wind-1000000/mat_x_result_1.csv", 0.7991)
 
+ti %>% 
+  plot_dispatch(568.61, 2229.65)
+```
+
+Difference between total and net wind power output is the curtailed wind power.
+
+```{r}
 ti %>%
-  gather(-index, key = "whi", value = "power") %>%
-  ggplot() + 
-    geom_line(mapping = aes(x = index, y = power, color = whi)) +
-    geom_abline(aes(intercept = 3208, slope = 0), color = "black") +
-    geom_abline(aes(intercept = 3208 * 0.23, slope = 0), color = "black") +
-    labs(
-      title = "Demand, Wind Power Output, Dispatch of GT and Bio",
-      x = "Time Index", y = "Power (MW)"
-      )
+  plot_dispatch_stack()
 ```
 
+## 2, Results of the Model with BEVs
 
-```{r, message = FALSE, fig.width = 5}
-ti_l_ev <-
-  read_csv(
-    "./results/2/mat_l_result.csv", col_names = as.character(seq(1, 20))
-    ) %>%
-  mutate(index = row_number()) %>%
-  gather(-index, key = "group", value = "level")
+```{r}
+ti_2 <- 
+  get_result_dispatch("./results/c_fix_wind-1000000/mat_x_result_2.csv", 0.6374)
 
-ti_u_ev <-
-  read_csv(
-    "./results/2/mat_u_result.csv", col_names = as.character(seq(1, 20))
-    ) %>%
-  mutate(index = row_number()) %>%
-  gather(-index, key = "group", value = "diff")
-
-ti_ev <- 
-  right_join(ti_l_ev, ti_u_ev, by = c("index", "group")) %>%
-  mutate(g = as.numeric(group)) %>%
-  select(index, g, level, diff)
-
-ti_ev %>%
-  filter(g == 5 | g == 10 | g == 15) %>%  #
-  ggplot() + 
-    facet_grid(rows = vars(g)) +
-    geom_line(mapping = aes(x = index, y = level)) +
-    # geom_line(mapping = aes(x = index, y = diff)) +
-    geom_abline(aes(intercept = 0.07, slope = 0), color = "red") +
-    geom_abline(aes(intercept = 0.0028, slope = 0), color = "red") +
-    labs(
-      title = "Battery Energy Levels of Different EV Groups",
-      x = "Time Index", y = "Energy (MWh)"
-      )
+ti_2 %>% 
+  plot_dispatch(181.80, 2473.48)
 ```
 
-To plot the line and bar graphs separately in two facets, use a dummy facet. See <https://sebastianrothbucher.github.io/datascience/r/visualization/ggplot/2018/03/24/two-scales-ggplot-r.html>.
+Note that negative power output from wind and storage happens around 25.
+
+```{r}
+ti_2 %>%
+  plot_dispatch_stack()
+```
+
