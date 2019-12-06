@@ -11,6 +11,10 @@ using PrettyTables
 using DataFrames
 
 # cd("/Users/edxu96/GitHub/Optivest.jl/Power-System/PIED")
+include("optim_1.jl")
+include("optim_2.jl")
+include("func.jl")
+include("data.jl")
 
 
 # "Sensitivity analysis"
@@ -30,40 +34,44 @@ using DataFrames
 # end
 
 
+"Optimize model 1 and model 2, export the results"
+function optim(vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var,
+        vec_ramp_rate_max, vec_min_rate, vec_eta_plus, vec_eta_minus,
+        vec_u_plus_max, vec_u_minus_max, vec_l_min, vec_l_max, vec_num,
+        mat_demand_ev, num_unit)
+    optim_mod_1(vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var,
+        vec_ramp_rate_max, vec_min_rate, num_unit)
+
+    optim_mod_2(vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var,
+        vec_ramp_rate_max, vec_min_rate, vec_eta_plus, vec_eta_minus,
+        vec_u_plus_max, vec_u_minus_max, vec_l_min, vec_l_max, vec_num,
+        mat_demand_ev, num_unit)
+end
+
+
 function main()
-    include("optim.jl")
-    include("func.jl")
+    println("#### Start ####")
 
     ## Get the default data
     num_unit = 168  # 168
-    vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var, vec_ramp_rate_max,
-        vec_min_rate, vec_eta_plus, vec_eta_minus, vec_u_plus_max,
-        vec_u_minus_max, vec_l_min, vec_l_max, vec_num, mat_demand_ev =
-        get_data(num_unit)
+    vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var,
+        vec_ramp_rate_max, vec_min_rate, vec_eta_plus, vec_eta_minus,
+        vec_u_plus_max, vec_u_minus_max, vec_l_min, vec_l_max, vec_num,
+        mat_demand_ev = get_data(num_unit)
 
     ## Optimize using default data
-    mat_x_result_1, mat_result_1, mat_x_result_2, mat_u_plus_result,
-    mat_u_minus_result, mat_l_result, mat_result_2 = optim(vec_demand,
+    wind_curtail_1, wind_curtail_2 = optim(vec_demand,
         vec_wind, vec_c_fix, c_fix_wind, vec_c_var,
         vec_ramp_rate_max, vec_min_rate, vec_eta_plus, vec_eta_minus,
         vec_u_plus_max, vec_u_minus_max, vec_l_min, vec_l_max, vec_num,
         mat_demand_ev, num_unit
         )
 
-    ## Export the result
-    export_result(
-        "c_fix_wind", 1000000, mat_x_result_1, mat_result_1,
-        mat_x_result_2, mat_u_plus_result, mat_u_minus_result, mat_l_result,
-        mat_result_2
-        )
-
     ## Do sensitity analysis
     # analyze_sense()
 
-    return mat_x_result_1, mat_result_1, mat_x_result_2, mat_u_plus_result,
-        mat_u_minus_result, mat_l_result, mat_result_2
+    println("#### Done ####")
 end
 
 
-mat_x_result_1, mat_result_1, mat_x_result_2, mat_u_plus_result,
-    mat_u_minus_result, mat_l_result, mat_result_2 = main()
+main()

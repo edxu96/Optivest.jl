@@ -5,29 +5,31 @@ author: Edward J. Xu (<edxu96@outlook.com>)
 date: "`r Sys.Date()`"
 ---
 
-```{r, echo=FALSE}
+```{r}
 rm(list = ls())
 setwd("~/GitHub/Optivest.jl/Power-System/PIED")
-
-knitr::opts_chunk$set(
-  collapse = FALSE,
-  echo = FALSE,
-  comment = "#>",
-  fig.align = "center",
-  fig.asp = 9/16,
-  fig.width = 5,
-  warning = FALSE,
-  message = FALSE
-)
 ```
 
-```{r, message=FALSE}
+```{r}
 library(tidyverse)
 library(magrittr)
 library(ggplot2)
 library(tidyr)
 library(kableExtra)
 library(knitr)
+```
+
+```{r, message=FALSE}
+knitr::opts_chunk$set(
+  collapse = FALSE,
+  echo = FALSE,
+  comment = "#>",
+  fig.align = "center",
+  fig.asp = 9/16,
+  fig.width = 10,
+  warning = FALSE,
+  message = FALSE
+)
 ```
 
 ```{r, message=FALSE}
@@ -75,7 +77,7 @@ plot_dispatch_stack <- function(ti){
     ggplot() +
       geom_area(mapping = aes(x = index, y = power, fill = whi)) +
       labs(
-        title = "Stacked Area Plot of Wind Power Output, Dispatch of GT and Bio",
+        title = "Stacked Area Plot of Wind, GT Dispatch, Bio Dispatch",
         x = "Time Index", y = "Power (MW)"
         )
 }
@@ -101,18 +103,39 @@ ti %>%
 
 ## 2, Results of the Model with BEVs
 
-```{r}
-ti_2 <- 
-  get_result_dispatch("./results/c_fix_wind-1000000/mat_x_result_2.csv", 0.6374)
+```{r, message=FALSE}
+ti_wind_u <-
+  read_csv("./results/c_fix_wind-1000000/mat_wind_u.csv", col_names = c("wind", "u")) %>%
+  mutate(wind_net = -wind) %>%
+  select(u)
+  # select(wind_net, u)
 
+ti_2 <-
+  read_csv("./results/c_fix_wind-1000000/mat_x_result_2.csv", col_names = c("gt", "bio")) %>%
+  mutate(index = row_number()) %>%
+  bind_cols(ti_dk1[1:168, 4]) %>%
+  bind_cols(ti_dk1[1:168, 5:6]) %>%
+  mutate(wind_total = (OnshoreWindPower + OffshoreWindPower) * 0.6374) %>%
+  mutate(demand = TotalLoad) %>%
+  bind_cols(ti_wind_u) %>%
+  select(index, demand, wind_total, u, gt, bio)
+
+y_gt <- 181.8006
+y_bio <- 2473.4825
 ti_2 %>% 
-  plot_dispatch(181.80, 2473.48)
+  mutate(wind_net = demand + u - gt - bio) %>%
+  gather(-index, key = "whi", value = "power") %>%
+  ggplot() + 
+    geom_line(mapping = aes(x = index, y = power, color = whi)) +
+    geom_hline(yintercept = y_gt, color = "grey", linetype = "dashed") +
+    geom_hline(yintercept = y_gt * 0.23, color = "grey", linetype = "dashed") +
+    geom_hline(yintercept = y_bio, color = "grey", linetype = "dashed") +
+    geom_hline(yintercept = y_bio * 0.5, color = "grey", linetype = "dashed") +
+    labs(
+      title = "Demand, Wind Power, GT Dispatch, Bio Dispatch",
+      x = "Time Index", y = "Power (MW)"
+      )
 ```
 
-Note that negative power output from wind and storage happens around 25.
-
-```{r}
-ti_2 %>%
-  plot_dispatch_stack()
-```
-
+`u` is the average charging or discharging speed.
+ 
