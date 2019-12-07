@@ -21,14 +21,14 @@ end
 
 
 "Export the results from model 1 to CSV files."
-function export_result_mod_1(name_para, para, mat_x_result_1, mat_result_1)
+function export_result_mod_1(name_para, para, mat_x_result_1, vec_result_1)
     CSV.write(
         "./results/" * name_para * "-" *  string(para) * "/mat_x_result_1.csv",
         DataFrame(mat_x_result_1'), writeheader = false
         )
     CSV.write(
-        "./results/" * name_para * "-" * string(para) * "/mat_result_1.csv",
-        DataFrame(mat_result_1), writeheader = false
+        "./results/" * name_para * "-" * string(para) * "/vec_result_1.csv",
+        DataFrame(vec_result_1), writeheader = false
         )
 end
 
@@ -69,7 +69,9 @@ function optim_mod_1(
     obj_result, vec_y_result, z_result, wind_curtail, mat_x_result =
         get_result_optim_mod_1(vec_wind, vec_demand, num_unit, model, vec_y,
         z, mat_x)
-    mat_result = print_result(obj_result, vec_y_result, z_result, wind_curtail)
+    vec_result = print_result(obj_result, vec_y_result, z_result, wind_curtail)
 
-    export_result_mod_1("c_fix_wind", 1000000, mat_x_result, mat_result)
+    export_result_mod_1("c_fix_wind", 1000000, mat_x_result, vec_result)
+
+    return vec_result
 end

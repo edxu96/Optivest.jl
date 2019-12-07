@@ -17,35 +17,47 @@ include("func.jl")
 include("data.jl")
 
 
-# "Sensitivity analysis"
-# function analyze_sense()
-#     ## Sensitity Analysis of `c_fix_wind`
-#     c_fix_wind = missing
-#     vec_c_fix_wind = [5000, 50000, 500000]
-#
-#     for i = 1:3
-#         c_fix_wind = vec_c_fix_wind[i]
-#         optim(vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var,
-#             vec_ramp_rate_max, vec_min_rate, vec_eta_plus, vec_eta_minus,
-#             vec_u_plus_max, vec_u_minus_max, vec_l_min, vec_l_max, vec_num,
-#             mat_demand_ev, vec_c_fix_wind[i]
-#             )
-#     end
-# end
+function analyze_sensitivity(vec_sensible, whi_sensible, whe_subsidy,
+        dict_input, vec_demand, vec_wind, vec_num, mat_demand_ev, num_unit)
+
+    df_result = DataFrame(name = String[], value = Int64[],
+        sensitivity = Int64[], whe_sub = Bool[], whe_ev = Bool[])
+
+    for i in vec_sensible
+        dict_input[whi_sensible] = i
+        vec_result_1, vec_result_2 = optim(dict_input, vec_demand, vec_wind,
+            vec_num, mat_demand_ev, num_unit)
+
+        push!(["y_gt", vec_result_1[1], i, whe_subsidy, false])
+        push!(["y_bio", vec_result_1[2], i, whe_subsidy, false])
+        push!(["z", vec_result_1[3], i, whe_subsidy, false])
+        push!(["obj", vec_result_1[4], i, whe_subsidy, false])
+        push!(["curtail", vec_result_1[5], i, whe_subsidy, false])
+
+        push!(["y_gt", vec_result_1[1], i, whe_subsidy, true])
+        push!(["y_bio", vec_result_1[2], i, whe_subsidy, true])
+        push!(["z", vec_result_1[3], i, whe_subsidy, true])
+        push!(["obj", vec_result_1[4], i, whe_subsidy, true])
+        push!(["curtail", vec_result_1[5], i, whe_subsidy, true])
+    end
+end
 
 
-"Optimize model 1 and model 2, export the results"
-function optim(vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var,
-        vec_ramp_rate_max, vec_min_rate, vec_eta_plus, vec_eta_minus,
+function optim(dict_input, vec_demand, vec_wind, vec_num,
+        mat_demand_ev, num_unit)
+    ## Convert the data for model
+    vec_c_fix, c_fix_wind, vec_c_var, vec_ramp_rate_max, vec_min_rate,
+        vec_eta_plus, vec_eta_minus, vec_u_plus_max, vec_u_minus_max,
+        vec_l_min, vec_l_max = get_data_for_model(dict_input)
+
+    vec_result_1 = optim_mod_1(vec_demand, vec_wind, vec_c_fix, c_fix_wind,
+        vec_c_var, vec_ramp_rate_max, vec_min_rate, num_unit)
+    vec_result_2 = optim_mod_2(vec_demand, vec_wind, vec_c_fix, c_fix_wind,
+        vec_c_var, vec_ramp_rate_max, vec_min_rate, vec_eta_plus, vec_eta_minus,
         vec_u_plus_max, vec_u_minus_max, vec_l_min, vec_l_max, vec_num,
         mat_demand_ev, num_unit)
-    optim_mod_1(vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var,
-        vec_ramp_rate_max, vec_min_rate, num_unit)
 
-    optim_mod_2(vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var,
-        vec_ramp_rate_max, vec_min_rate, vec_eta_plus, vec_eta_minus,
-        vec_u_plus_max, vec_u_minus_max, vec_l_min, vec_l_max, vec_num,
-        mat_demand_ev, num_unit)
+    return vec_result_1, vec_result_2
 end
 
 
@@ -54,25 +66,20 @@ function main()
 
     ## Get the default data
     num_unit = 168  # 168
-    # vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var,
-    #     vec_ramp_rate_max, vec_min_rate, vec_eta_plus, vec_eta_minus,
-    #     vec_u_plus_max, vec_u_minus_max, vec_l_min, vec_l_max, vec_num,
-    #     mat_demand_ev = get_data_default(num_unit)
-    vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var,
-        vec_ramp_rate_max, vec_min_rate, vec_eta_plus, vec_eta_minus,
-        vec_u_plus_max, vec_u_minus_max, vec_l_min, vec_l_max, vec_num,
-        mat_demand_ev = get_data_subsidy(num_unit)
+    whe_subsidy = true
 
-    ## Optimize using default data
-    wind_curtail_1, wind_curtail_2 = optim(vec_demand,
-        vec_wind, vec_c_fix, c_fix_wind, vec_c_var,
-        vec_ramp_rate_max, vec_min_rate, vec_eta_plus, vec_eta_minus,
-        vec_u_plus_max, vec_u_minus_max, vec_l_min, vec_l_max, vec_num,
-        mat_demand_ev, num_unit
-        )
+    ## Get the data
+    dict_input, vec_demand, vec_wind, vec_num, mat_demand_ev =
+        get_data(whe_subsidy)
 
-    ## Do sensitity analysis
-    # analyze_sense()
+    ##
+    optim(dict_input, vec_demand, vec_wind, vec_num, mat_demand_ev, num_unit)
+
+    ## Sensitity Analysis
+    # vec_sensible = []
+    # whi_sensible = "c_fix_wind"
+    # analyze_sensitivity(vec_sensible, whi_sensible, whe_subsidy, dict_input,
+    #     vec_demand, vec_wind, vec_num, mat_demand_ev, num_unit)
 
     println("#### Done ####")
 end

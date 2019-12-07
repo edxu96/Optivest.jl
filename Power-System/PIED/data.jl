@@ -7,23 +7,7 @@ function print_input(c_fix_wind, vec_c_fix, vec_c_var, vec_ramp_rate_max,
         vec_min_rate, vec_eta_plus, vec_eta_minus, vec_u_plus_max,
         vec_u_minus_max, vec_l_min, vec_l_max, str_name_dataset)
 
-    dict_input = Dict(
-        "c_fix_wind" => c_fix_wind,
-        "c_fix_gt" => vec_c_fix[1],
-        "c_fix_bio" => vec_c_fix[2],
-        "c_var_gt" => vec_c_var[1],
-        "c_var_bio" => vec_c_var[2],
-        "ramp_rate_max_gt" => vec_ramp_rate_max[1],
-        "ramp_rate_max_bio" => vec_ramp_rate_max[2],
-        "min_rate_gt" => vec_min_rate[1],
-        "min_rate_bio" => vec_min_rate[2],
-        "eta_plus" => vec_eta_plus[1],
-        "eta_minus" => vec_eta_minus[1],
-        "u_plus_max" => vec_u_plus_max[1],
-        "u_minus_max" => vec_u_minus_max[1],
-        "l_min" => vec_l_min[1],
-        "l_max" => vec_l_max[1]
-        )
+
 
     println("Dataset " * str_name_dataset * " is the input.")
     pretty_table(DataFrame(Name = [i for i in keys(dict_input)],
@@ -112,12 +96,6 @@ function get_data_default(num_unit)
     ## emission cost 25
 
     ## Data for EVs
-    vec_eta_plus = repeat([0.94], 20)
-    vec_eta_minus = repeat([0.886], 20)  # 0.086
-    vec_u_plus_max = repeat([0.035], 20)  # 0.05
-    vec_u_minus_max = repeat([0.14], 20)
-    vec_l_min = repeat([0.0028], 20)
-    vec_l_max = repeat([0.07], 20)
     vec_num = [28, 66, 68, 143, 160, 174, 188, 213, 227, 242, 244, 256, 303,
         360, 368, 428, 471, 472, 526, 1102]
 
@@ -138,4 +116,61 @@ function get_data_default(num_unit)
         vec_ramp_rate_max, vec_min_rate, vec_eta_plus, vec_eta_minus,
         vec_u_plus_max, vec_u_minus_max, vec_l_min, vec_l_max, vec_num,
         mat_demand_ev
+end
+
+
+function get_data(whe_subsidy)
+    if whe_subsidy
+        vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var,
+            vec_ramp_rate_max, vec_min_rate, vec_eta_plus, vec_eta_minus,
+            vec_u_plus_max, vec_u_minus_max, vec_l_min, vec_l_max, vec_num,
+            mat_demand_ev = get_data_default(num_unit)
+    else
+        vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var,
+            vec_ramp_rate_max, vec_min_rate, vec_eta_plus, vec_eta_minus,
+            vec_u_plus_max, vec_u_minus_max, vec_l_min, vec_l_max, vec_num,
+            mat_demand_ev = get_data_subsidy(num_unit)
+    end
+
+    ##
+    dict_input = Dict(
+        "c_fix_wind" => c_fix_wind,
+        "c_fix_gt" => vec_c_fix[1],
+        "c_fix_bio" => vec_c_fix[2],
+        "c_var_gt" => vec_c_var[1],
+        "c_var_bio" => vec_c_var[2],
+        "ramp_rate_max_gt" => vec_ramp_rate_max[1],
+        "ramp_rate_max_bio" => vec_ramp_rate_max[2],
+        "min_rate_gt" => vec_min_rate[1],
+        "min_rate_bio" => vec_min_rate[2],
+        "eta_plus" => vec_eta_plus[1],
+        "eta_minus" => vec_eta_minus[1],
+        "u_plus_max" => vec_u_plus_max[1],
+        "u_minus_max" => vec_u_minus_max[1],
+        "l_min" => vec_l_min[1],
+        "l_max" => vec_l_max[1]
+        )
+
+    return dict_input, vec_demand, vec_wind, vec_num, mat_demand_ev
+end
+
+
+function get_data_for_model(dict_input)
+
+    c_fix_wind = dict_input["c_fix_wind"]
+    vec_c_fix = [dict_input["c_fix_gt"], dict_input["c_fix_bio"]]
+    vec_c_var = [dict_input["c_var_gt"], dict_input["c_var_bio"]]
+    vec_ramp_rate_max = [dict_input["ramp_rate_max_gt"], dict_input["ramp_rate_max_bio"]]
+    vec_min_rate = [dict_input["min_rate_gt"], dict_input["min_rate_bio"]]
+
+    vec_eta_plus = repeat([dict_input["eta_plus"]], 20)
+    vec_eta_minus = repeat([dict_input["eta_minus"]], 20)  # 0.086
+    vec_u_plus_max = repeat([dict_input["u_plus_max"]], 20)  # 0.05
+    vec_u_minus_max = repeat([dict_input["u_minus_max"]], 20)
+    vec_l_min = repeat([dict_input["l_min"]], 20)
+    vec_l_max = repeat([dict_input["l_max"]], 20)
+
+    return vec_c_fix, c_fix_wind, vec_c_var,
+        vec_ramp_rate_max, vec_min_rate, vec_eta_plus, vec_eta_minus,
+        vec_u_plus_max, vec_u_minus_max, vec_l_min, vec_l_max
 end
