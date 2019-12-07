@@ -20,7 +20,7 @@ function get_result_optim_mod_2(vec_wind, vec_demand, num_unit, vec_num, model,
     mat_u_result = mat_u_plus_result' - mat_u_minus_result'
 
     ## Aggregate the charging and discharing
-    vec_u_result = vec_demand
+    vec_u_result = zeros(length(vec_demand))
     for t = 1:num_unit
         vec_u_result[t] = sum(mat_u_result[t, i] * vec_num[i] for i = 1:20)
     end
@@ -30,8 +30,11 @@ function get_result_optim_mod_2(vec_wind, vec_demand, num_unit, vec_num, model,
         mat_x_result'[:, 2]
     wind_curtail = sum(vec_wind - vec_wind_net) / num_unit * 365 * 24
 
-    return obj_result, vec_y_result, z_result, wind_curtail, mat_x_result,
-        vec_wind_net, vec_u_result, mat_l_result
+    vec_result = [
+        vec_y_result[1] vec_y_result[2] z_result obj_result wind_curtail
+        ]
+
+    return vec_result, mat_x_result, vec_wind_net, vec_u_result, mat_l_result
 end
 
 
@@ -65,7 +68,6 @@ function optim_mod_2(
         vec_u_plus_max, vec_u_minus_max, vec_l_min, vec_l_max, vec_num,
         mat_demand_ev, num_unit, whe_print_result
         )
-
     model = Model(with_optimizer(CPLEX.Optimizer, CPX_PARAM_SCRIND = 0))
     @variable(model, mat_x[1:2, 1:num_unit] >= 0)
     @variable(model, vec_y[1:2] >= 0)
@@ -81,18 +83,17 @@ function optim_mod_2(
         )
 
     ## Basic constraints
-    @constraint(model, mat_cons_1[j = 1:2, t = 1:(num_unit - 1)],
-        - vec_ramp_rate_max[j] * vec_y[j] <= mat_x[j, t+1] - mat_x[j, t]
-        )  # Ramping down ability
-    @constraint(model, vec_cons_2[t = 1:num_unit],
-        mat_x[1, t] + mat_x[2, t] +
-            sum(mat_u_minus[g, t] * vec_eta_minus[g] * vec_num[g]
-            for g = 1:20) >= vec_demand[t] - z * vec_wind[t] +
-            sum(mat_u_plus[g, t] * vec_num[g] for g = 1:20)
-        )  # Satisfy the demand
+    @constraint(model, vec_cons_2[t = 1:num_unit], mat_x[1, t] + mat_x[2, t] +
+        sum(mat_u_minus[g, t] * vec_eta_minus[g] * vec_num[g]
+        for g = 1:20) >= vec_demand[t] - z * vec_wind[t] +
+        sum(mat_u_plus[g, t] * vec_num[g] for g = 1:20))
+        # Satisfy the demand
     @constraint(model, vec_cons_3[i = 1:2, t = 1:num_unit],
         mat_x[i, t] <= vec_y[i]
         )
+    @constraint(model, mat_cons_1[j = 1:2, t = 1:(num_unit - 1)],
+        - vec_ramp_rate_max[j] * vec_y[j] <= mat_x[j, t+1] - mat_x[j, t]
+        )  # Ramping down ability
     @constraint(model, mat_cons_4[i = 1:2, t = 1:(num_unit - 1)],
         mat_x[i, t+1] - mat_x[i, t] <= vec_ramp_rate_max[i] * vec_y[i]
         )  # Ramping up ability
@@ -100,7 +101,7 @@ function optim_mod_2(
         mat_x[i, t] >= vec_min_rate[i] * vec_y[i]
         )  # Min load
 
-    ## Additional constraints for EVs
+    # Additional constraints for EVs
     @constraint(model, vec_cons_6[g = 1:20, t = 1:(num_unit - 1)],
         mat_l[g, t+1] == mat_l[g, t] + 1 * mat_u_plus[g, t] * vec_eta_plus[g] -
         1 * mat_u_minus[g, t] - 1 * mat_demand_ev[g, t])
@@ -125,12 +126,10 @@ function optim_mod_2(
         )
 
     optimize!(model)
-    obj_result, vec_y_result, z_result, wind_curtail, mat_x_result,
-        vec_wind_net, vec_u_result, mat_l_result = get_result_optim_mod_2(
-        vec_wind, vec_demand, num_unit, vec_num, model, vec_y, z, mat_x,
-        mat_u_plus, mat_u_minus, mat_l)
 
-    vec_result = get_vec_result(obj_result, vec_y_result, z_result, wind_curtail)
+    vec_result, mat_x_result, vec_wind_net, vec_u_result, mat_l_result =
+        get_result_optim_mod_2(vec_wind, vec_demand, num_unit, vec_num, model,
+        vec_y, z, mat_x, mat_u_plus, mat_u_minus, mat_l)
 
     if whe_print_result
         pretty_table(vec_result, ["y_gt" "y_bio" "z" "obj" "curtail"];
@@ -139,6 +138,5 @@ function optim_mod_2(
             vec_result, vec_wind_net)
     end
 
-    println(vec_result)
     return vec_result
 end

@@ -13,36 +13,22 @@ using DataFrames
 # cd("/Users/edxu96/GitHub/Optivest.jl/Power-System/PIED")
 include("optim_1.jl")
 include("optim_2.jl")
-include("func.jl")
 include("data.jl")
 
 
-function optim(dict_input, vec_demand, vec_wind, vec_num, mat_demand_ev,
-        num_unit, whe_print_result)
-    ## Convert the data for model
-    vec_c_fix, c_fix_wind, vec_c_var, vec_ramp_rate_max, vec_min_rate,
-        vec_eta_plus, vec_eta_minus, vec_u_plus_max, vec_u_minus_max,
-        vec_l_min, vec_l_max = get_data_for_model(dict_input)
-
-    vec_result_1 = [0 0 0 0 0]
-    vec_result_2 = [0 0 0 0 0]
-    let
-        vec_result_1 = optim_mod_1(vec_demand, vec_wind, vec_c_fix, c_fix_wind,
-            vec_c_var, vec_ramp_rate_max, vec_min_rate, num_unit,
-            whe_print_result)
+"Get the optimized value of decision vector."
+function value_vec(vec_x::Union{Array{VariableRef,1}, VariableRef})
+    if isa(vec_x, VariableRef)
+        vec_value = value(vec_x)
+    else
+        vec_value = [value(vec_x[i]) for i = 1:length(vec_x)]
     end
 
-    let
-        vec_result_2 = optim_mod_2(vec_demand, vec_wind, vec_c_fix, c_fix_wind,
-            vec_c_var, vec_ramp_rate_max, vec_min_rate, vec_eta_plus,
-            vec_eta_minus, vec_u_plus_max, vec_u_minus_max, vec_l_min,
-            vec_l_max, vec_num, mat_demand_ev, num_unit, whe_print_result)
-    end
-
-    return vec_result_1, vec_result_2
+    return vec_value
 end
 
 
+"Do sensitivity analysis."
 function analyze_sensitivity(vec_sensible, whi_sensible, whe_subsidy,
         dict_input, vec_demand, vec_wind, vec_num, mat_demand_ev, num_unit,
         whe_print_result)
@@ -52,14 +38,26 @@ function analyze_sensitivity(vec_sensible, whi_sensible, whe_subsidy,
 
     for i in vec_sensible
         dict_input[whi_sensible] = i
-        vec_result_1, vec_result_2 = optim(dict_input, vec_demand, vec_wind,
-            vec_num, mat_demand_ev, num_unit, whe_print_result)
+
+        vec_c_fix, c_fix_wind, vec_c_var, vec_ramp_rate_max, vec_min_rate,
+            vec_eta_plus, vec_eta_minus, vec_u_plus_max, vec_u_minus_max,
+            vec_l_min, vec_l_max = get_data_for_model(dict_input)
+
+        ## Optimize model 1
+        vec_result_1 = optim_mod_1(vec_demand, vec_wind, vec_c_fix, c_fix_wind,
+            vec_c_var, vec_ramp_rate_max, vec_min_rate, num_unit,
+            whe_print_result)
 
         push!(df_result, ["y_gt", vec_result_1[1], i, whe_subsidy, false])
         push!(df_result, ["y_bio", vec_result_1[2], i, whe_subsidy, false])
         push!(df_result, ["z", vec_result_1[3], i, whe_subsidy, false])
         push!(df_result, ["obj", vec_result_1[4], i, whe_subsidy, false])
         push!(df_result, ["curtail", vec_result_1[5], i, whe_subsidy, false])
+
+        vec_result_2 = optim_mod_2(vec_demand, vec_wind, vec_c_fix, c_fix_wind,
+            vec_c_var, vec_ramp_rate_max, vec_min_rate, vec_eta_plus,
+            vec_eta_minus, vec_u_plus_max, vec_u_minus_max, vec_l_min,
+            vec_l_max, vec_num, mat_demand_ev, num_unit, whe_print_result)
 
         push!(df_result, ["y_gt", vec_result_2[1], i, whe_subsidy, true])
         push!(df_result, ["y_bio", vec_result_2[2], i, whe_subsidy, true])
@@ -97,8 +95,8 @@ function main()
 
     ## Sensitity Analysis
     whe_print_result = false
-    vec_sensible = [52000000, 52000000] ./ 20
-    # vec_sensible = collect(0.995:0.001:1.005) .* 52000000 ./ 20
+    # vec_sensible = [52000000, 52000000, 52000000] ./ 20
+    vec_sensible = collect(0.995:0.001:1.005) .* 52000000 ./ 20
     whi_sensible = "c_fix_wind"
 
     # vec_sensible = collect(0.7:0.05:1.1) * 441 ./ 20

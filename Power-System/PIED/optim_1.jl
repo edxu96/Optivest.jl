@@ -16,7 +16,11 @@ function get_result_optim_mod_1(vec_wind, vec_demand, num_unit, model, vec_y,
     ## Calculate the average wind_curtail over the year
     wind_curtail = sum(vec_wind - vec_wind_net) / num_unit * 365 * 24
 
-    return obj_result, vec_y_result, z_result, wind_curtail, mat_x_result
+    vec_result = [
+        vec_y_result[1] vec_y_result[2] z_result obj_result wind_curtail
+        ]
+
+    return vec_result, mat_x_result
 end
 
 
@@ -40,11 +44,10 @@ function optim_mod_1(
     @variable(model, vec_y[1:2] >= 0)
     @variable(model, 0 <= z <= 1)
 
-    @objective(model, Min,
-        sum(mat_x[i, t] * vec_c_var[i] for i = 1:2, t = 1:num_unit) /
-        num_unit * 365 * 24 + sum(vec_y[i] * vec_c_fix[i] for i = 1:2) +
-        c_fix_wind * z
-        )
+    @objective(model, Min, sum(mat_x[i, t] * vec_c_var[i] for i = 1:2,
+        t = 1:num_unit) / num_unit * 365 * 24 + sum(vec_y[i] * vec_c_fix[i]
+        for i = 1:2) + c_fix_wind * z)
+
     @constraint(model, mat_cons_1[j = 1:2, t = 1:(num_unit - 1)],
         - vec_ramp_rate_max[j] * vec_y[j] <= mat_x[j, t+1] - mat_x[j, t]
         )  # Ramping down ability
@@ -62,12 +65,8 @@ function optim_mod_1(
         )  # Min load
 
     optimize!(model)
-    obj_result, vec_y_result, z_result, wind_curtail, mat_x_result =
-        get_result_optim_mod_1(vec_wind, vec_demand, num_unit, model, vec_y,
-        z, mat_x)
-
-    vec_result = get_vec_result(obj_result, vec_y_result, z_result,
-        wind_curtail)
+    vec_result, mat_x_result = get_result_optim_mod_1(vec_wind, vec_demand,
+        num_unit, model, vec_y, z, mat_x)
 
     if whe_print_result
         pretty_table(vec_result, ["y_gt" "y_bio" "z" "obj" "curtail"];
@@ -75,6 +74,5 @@ function optim_mod_1(
         export_result_mod_1(mat_x_result, vec_result)
     end
 
-    println(vec_result)
     return vec_result
 end

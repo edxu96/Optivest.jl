@@ -26,7 +26,7 @@ knitr::opts_chunk$set(
   comment = "#>",
   fig.align = "center",
   fig.asp = 9/16,
-  fig.width = 10,
+  fig.width = 8,
   warning = FALSE,
   message = FALSE
 )
@@ -142,7 +142,7 @@ plot_dispatch_ev <- function(ti, y_gt, y_bio){
 
 ## 1.1, Model 1 (without BEVs)
 
-```{r, message=FALSE, fig.asp = 9/16, fig.width = 5}
+```{r, message=FALSE, fig.asp = 9/16, fig.width = 8}
 ti_1 <- 
   get_result_dispatch("./results/without-subsidy/mat_x_result_1.csv", 1)
 
@@ -152,7 +152,7 @@ ti_1 %>%
 
 ## 1.2, Model 2 (with BEVs)
 
-```{r, message=FALSE, fig.asp = 9/16, fig.width = 5}
+```{r, message=FALSE, error=FALSE, fig.asp = 9/16, fig.width = 8}
 ti_2 <- 
   get_result_dispatch_ev("./results/without-subsidy/mat_wind_u.csv",
     "./results/without-subsidy/mat_x_result_2.csv", 1)
@@ -165,7 +165,7 @@ ti_2 %>%
 
 ## 2.1, Model 1 (without BEVs)
 
-```{r, message=FALSE, fig.asp = 9/16, fig.width = 5}
+```{r, message=FALSE, fig.asp = 9/16, fig.width = 8}
 ti_3 <- 
   get_result_dispatch("./results/subsidy/mat_x_result_1.csv", 0.6249)
 
@@ -177,7 +177,7 @@ Difference between total and net wind power output is the curtailed wind power.
 
 ## 2.2, Model 2 (with BEVs)
 
-```{r, message=FALSE, fig.asp = 9/16, fig.width = 5}
+```{r, message=FALSE, fig.asp = 9/16, fig.width = 8}
 ti_4 <- 
   get_result_dispatch_ev("./results/subsidy/mat_wind_u.csv",
     "./results/subsidy/mat_x_result_2.csv", 0.6242)
@@ -188,3 +188,35 @@ ti_4 %>%
 
 `u` is the average charging or discharging speed.
  
+# Sensitivity Analysis with Subsidized Data
+
+```{r, message=FALSE}
+ti_sensitivity <- 
+  read_csv(
+    "./results/df_result_sensitivity_c_fix_wind.csv", 
+    col_names = c("name", "value", "sensitivity", "whe_sub", "whe_ev")
+    )
+```
+
+```{r, message=FALSE, fig.asp = 9/16, fig.width = 8}
+ti_sensitivity %>%
+  filter(whe_ev == F) %>%
+  # filter(name == "obj") %>%
+  ggplot() + 
+    geom_line(mapping = aes(x = sensitivity, y = value)) +
+    facet_grid(rows = vars(name), scales = "free") +
+    labs(x = "Fixed Cost of Wind (DKK / %)", y = "Value",
+         title = "Sensitivity of Fixed Cost of Wind in Model 1")
+```
+
+```{r, message=FALSE, fig.asp = 9/16, fig.width = 8}
+ti_sensitivity %>%
+  filter(whe_ev == T) %>%
+  # filter(name == "obj") %>%
+  ggplot() + 
+    geom_line(mapping = aes(x = sensitivity, y = value)) +
+    facet_grid(rows = vars(name), scales = "free") +
+    labs(x = "Fixed Cost of Wind (DKK / %)", y = "Value",
+         title = "Sensitivity of Fixed Cost of Wind in Model 2")
+```
+
