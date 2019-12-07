@@ -3,15 +3,28 @@
 ## Dec 6th, 2019
 
 
-function print_input(c_fix_wind, vec_c_fix, vec_c_var, vec_ramp_rate_max,
-        vec_min_rate, vec_eta_plus, vec_eta_minus, vec_u_plus_max,
-        vec_u_minus_max, vec_l_min, vec_l_max, str_name_dataset)
+function get_data_ev(num_unit)
+    ## Data for EVs
+    vec_num = [28, 66, 68, 143, 160, 174, 188, 213, 227, 242, 244, 256, 303,
+        360, 368, 428, 471, 472, 526, 1102]
 
+    ## Data for driving patterns
+    mat_demand_weekend =
+        CSV.read("./data/demand-EV_weekend.csv")[1:20, 1:24] .* 0.0001666
+    mat_demand_weekday =
+        CSV.read("./data/demand-EV_weekday.csv")[1:20, 1:24] .* 0.0001666
 
+    mat_demand_ev = hcat(mat_demand_weekday, mat_demand_weekday,
+        mat_demand_weekend, mat_demand_weekend, mat_demand_weekday,
+        mat_demand_weekday, mat_demand_weekday,
+        makeunique = true)
+    mat_demand_ev = convert(Matrix, mat_demand_ev)
 
-    println("Dataset " * str_name_dataset * " is the input.")
-    pretty_table(DataFrame(Name = [i for i in keys(dict_input)],
-        Value = [i for i in values(dict_input)]))
+    ##
+    mat_demand_ev = repeat(mat_demand_ev, 1, convert(Int64, floor(num_unit / 168) + 1))
+    mat_demand_ev = mat_demand_ev[:, 1:num_unit]
+
+    return vec_num, mat_demand_ev
 end
 
 
@@ -47,21 +60,8 @@ function get_data_subsidy(num_unit)
     vec_u_minus_max = repeat([0.14], 20)
     vec_l_min = repeat([0.0028], 20)
     vec_l_max = repeat([0.07], 20)
-    vec_num = [28, 66, 68, 143, 160, 174, 188, 213, 227, 242, 244, 256, 303,
-        360, 368, 428, 471, 472, 526, 1102]
 
-    ## Data for driving patterns
-    mat_demand_weekend =
-        CSV.read("./data/demand-EV_weekend.csv")[1:20, 1:24] .* 0.0001666
-    mat_demand_weekday =
-        CSV.read("./data/demand-EV_weekday.csv")[1:20, 1:24] .* 0.0001666
-    mat_demand_ev = hcat(mat_demand_weekday, mat_demand_weekday,
-        mat_demand_weekday, mat_demand_weekday, mat_demand_weekday,
-        mat_demand_weekend, mat_demand_weekend, makeunique = true)
-
-    print_input(c_fix_wind, vec_c_fix, vec_c_var, vec_ramp_rate_max,
-        vec_min_rate, vec_eta_plus, vec_eta_minus, vec_u_plus_max,
-        vec_u_minus_max, vec_l_min, vec_l_max, "with-subsidies")
+    vec_num, mat_demand_ev = get_data_ev(num_unit)
 
     return vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var,
         vec_ramp_rate_max, vec_min_rate, vec_eta_plus, vec_eta_minus,
@@ -95,22 +95,7 @@ function get_data_default(num_unit)
     vec_min_rate = [0.23, 0.5]  # [0.5, 0.3]
     ## emission cost 25
 
-    ## Data for EVs
-    vec_num = [28, 66, 68, 143, 160, 174, 188, 213, 227, 242, 244, 256, 303,
-        360, 368, 428, 471, 472, 526, 1102]
-
-    ## Data for driving patterns
-    mat_demand_weekend =
-        CSV.read("./data/demand-EV_weekend.csv")[1:20, 1:24] .* 0.0001666
-    mat_demand_weekday =
-        CSV.read("./data/demand-EV_weekday.csv")[1:20, 1:24] .* 0.0001666
-    mat_demand_ev = hcat(mat_demand_weekday, mat_demand_weekday,
-        mat_demand_weekday, mat_demand_weekday, mat_demand_weekday,
-        mat_demand_weekend, mat_demand_weekend, makeunique = true)
-
-    print_input(c_fix_wind, vec_c_fix, vec_c_var, vec_ramp_rate_max,
-        vec_min_rate, vec_eta_plus, vec_eta_minus, vec_u_plus_max,
-        vec_u_minus_max, vec_l_min, vec_l_max, "default")
+    vec_num, mat_demand_ev = get_data_ev(num_unit)
 
     return vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var,
         vec_ramp_rate_max, vec_min_rate, vec_eta_plus, vec_eta_minus,
@@ -119,17 +104,19 @@ function get_data_default(num_unit)
 end
 
 
-function get_data(whe_subsidy)
+function get_data(whe_subsidy, num_unit)
     if whe_subsidy
-        vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var,
-            vec_ramp_rate_max, vec_min_rate, vec_eta_plus, vec_eta_minus,
-            vec_u_plus_max, vec_u_minus_max, vec_l_min, vec_l_max, vec_num,
-            mat_demand_ev = get_data_default(num_unit)
-    else
+        println("Data with subsidy is the input.")
         vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var,
             vec_ramp_rate_max, vec_min_rate, vec_eta_plus, vec_eta_minus,
             vec_u_plus_max, vec_u_minus_max, vec_l_min, vec_l_max, vec_num,
             mat_demand_ev = get_data_subsidy(num_unit)
+    else
+        println("Data without subsidy is the input.")
+        vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var,
+            vec_ramp_rate_max, vec_min_rate, vec_eta_plus, vec_eta_minus,
+            vec_u_plus_max, vec_u_minus_max, vec_l_min, vec_l_max, vec_num,
+            mat_demand_ev = get_data_default(num_unit)
     end
 
     ##
@@ -150,6 +137,8 @@ function get_data(whe_subsidy)
         "l_min" => vec_l_min[1],
         "l_max" => vec_l_max[1]
         )
+    pretty_table(DataFrame(Name = [i for i in keys(dict_input)],
+        Value = [i for i in values(dict_input)]))
 
     return dict_input, vec_demand, vec_wind, vec_num, mat_demand_ev
 end

@@ -36,7 +36,7 @@ end
 "Optimal Investment and Economic Dispatch without Storage Devices"
 function optim_mod_1(
         vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var,
-        vec_ramp_rate_max, vec_min_rate, num_unit
+        vec_ramp_rate_max, vec_min_rate, num_unit, whe_print_result
         )
     model = Model(with_optimizer(CPLEX.Optimizer, CPX_PARAM_SCRIND = 0))
 
@@ -71,9 +71,12 @@ function optim_mod_1(
         z, mat_x)
 
     vec_result = get_vec_result(obj_result, vec_y_result, z_result, wind_curtail)
-    # pretty_table(vec_result, ["y_gt" "y_bio" "z" "obj" "curtail"];
-        # formatter = ft_round(4))
-    # export_result_mod_1("c_fix_wind", 1000000, mat_x_result, vec_result)
+
+    if whe_print_result
+        pretty_table(vec_result, ["y_gt" "y_bio" "z" "obj" "curtail"];
+            formatter = ft_round(4))
+        export_result_mod_1("c_fix_wind", 1000000, mat_x_result, vec_result)
+    end
 
     return vec_result
 end

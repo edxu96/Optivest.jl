@@ -63,7 +63,7 @@ function optim_mod_2(
         vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var,
         vec_ramp_rate_max, vec_min_rate, vec_eta_plus, vec_eta_minus,
         vec_u_plus_max, vec_u_minus_max, vec_l_min, vec_l_max, vec_num,
-        mat_demand_ev, num_unit
+        mat_demand_ev, num_unit, whe_print_result
         )
 
     model = Model(with_optimizer(CPLEX.Optimizer, CPX_PARAM_SCRIND = 0))
@@ -103,8 +103,8 @@ function optim_mod_2(
     ## Additional constraints for EVs
     @constraint(model, vec_cons_6[g = 1:20, t = 1:(num_unit - 1)],
         mat_l[g, t+1] == mat_l[g, t] + 1 * mat_u_plus[g, t] * vec_eta_plus[g] -
-            1 * mat_u_minus[g, t] - 1 * mat_demand_ev[g, t]
-        )  # Update the energy level
+        1 * mat_u_minus[g, t] - 1 * mat_demand_ev[g, t])
+        # Update the energy level
     @constraint(model, vec_cons_7[g = 1:20, t = 1:num_unit],
         vec_l_min[g] <= mat_l[g, t]
         )  # Lower limit of energy level
@@ -131,10 +131,13 @@ function optim_mod_2(
         mat_u_plus, mat_u_minus, mat_l)
 
     vec_result = get_vec_result(obj_result, vec_y_result, z_result, wind_curtail)
-    # pretty_table(vec_result, ["y_gt" "y_bio" "z" "obj" "curtail"];
-        # formatter = ft_round(4))
-    # export_result_mod_2("c_fix_wind", 1000000, mat_x_result, vec_u_result,
-        # mat_l_result, vec_result, vec_wind_net)
+
+    if whe_print_result
+        pretty_table(vec_result, ["y_gt" "y_bio" "z" "obj" "curtail"];
+            formatter = ft_round(4))
+        export_result_mod_2("c_fix_wind", 1000000, mat_x_result, vec_u_result,
+            mat_l_result, vec_result, vec_wind_net)
+    end
 
     return vec_result
 end
