@@ -69,9 +69,11 @@ function optim_mod_1(
     obj_result, vec_y_result, z_result, wind_curtail, mat_x_result =
         get_result_optim_mod_1(vec_wind, vec_demand, num_unit, model, vec_y,
         z, mat_x)
-    vec_result = print_result(obj_result, vec_y_result, z_result, wind_curtail)
 
-    export_result_mod_1("c_fix_wind", 1000000, mat_x_result, vec_result)
+    vec_result = get_vec_result(obj_result, vec_y_result, z_result, wind_curtail)
+    # pretty_table(vec_result, ["y_gt" "y_bio" "z" "obj" "curtail"];
+        # formatter = ft_round(4))
+    # export_result_mod_1("c_fix_wind", 1000000, mat_x_result, vec_result)
 
     return vec_result
 end

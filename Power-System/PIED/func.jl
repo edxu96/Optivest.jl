@@ -21,11 +21,9 @@ end
 
 
 "Print the first stage decision variables and performace metric"
-function print_result(obj_result, vec_y_result, z_result, wind_curtail)
+function get_vec_result(obj_result, vec_y_result, z_result, wind_curtail)
     vec_result = [
         vec_y_result[1] vec_y_result[2] z_result obj_result wind_curtail
         ]
-    pretty_table(vec_result, ["y_gt" "y_bio" "z" "obj" "curtail"];
-        formatter = ft_round(4))
     return vec_result
 end
