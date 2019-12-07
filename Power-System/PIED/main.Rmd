@@ -61,9 +61,17 @@ plot_dispatch <- function(ti, y_gt, y_bio){
     ggplot() + 
       geom_line(mapping = aes(x = index, y = power, color = whi)) +
       geom_hline(yintercept = y_gt, color = "grey", linetype = "dashed") +
-      geom_hline(yintercept = y_gt * 0.23, color = "grey", linetype = "dashed") +
+      geom_text(aes(0, y_gt, label = y_gt), size = 3) + 
+      geom_hline(
+        yintercept = y_gt * 0.23, color = "grey", linetype = "dashed"
+        ) +
+      geom_text(aes(0, y_gt * 0.23, label = y_gt * 0.23), size = 3) + 
       geom_hline(yintercept = y_bio, color = "grey", linetype = "dashed") +
-      geom_hline(yintercept = y_bio * 0.5, color = "grey", linetype = "dashed") +
+      geom_text(aes(0, y_bio, label = y_bio), size = 3) + 
+      geom_hline(
+        yintercept = y_bio * 0.5, color = "grey", linetype = "dashed"
+        ) +
+      geom_text(aes(0,  y_bio * 0.5, label =  y_bio * 0.5), size = 3) + 
       labs(
         title = "Demand, Wind Power Output, Dispatch of GT and Bio",
         x = "Time Index", y = "Power (MW)"
@@ -81,60 +89,101 @@ plot_dispatch_stack <- function(ti){
         x = "Time Index", y = "Power (MW)"
         )
 }
-```
 
-
-## 1, Results of the Model without Storage Devices
-
-```{r, message=FALSE}
-ti <- 
-  get_result_dispatch("./results/c_fix_wind-1000000/mat_x_result_1.csv", 0.7991)
-
-ti %>% 
-  plot_dispatch(568.61, 2229.65)
-```
-
-Difference between total and net wind power output is the curtailed wind power.
-
-```{r}
-ti %>%
-  plot_dispatch_stack()
-```
-
-## 2, Results of the Model with BEVs
-
-```{r, message=FALSE}
-ti_wind_u <-
-  read_csv("./results/c_fix_wind-1000000/mat_wind_u.csv", col_names = c("wind", "u")) %>%
+#' Get the result
+get_result_dispatch_ev <- function(str_file_wind_u, str_file_result, z){
+  ti_wind_u <-
+  read_csv(str_file_wind_u, col_names = c("wind", "u")) %>%
   mutate(wind_net = -wind) %>%
   select(u)
   # select(wind_net, u)
 
-ti_2 <-
-  read_csv("./results/c_fix_wind-1000000/mat_x_result_2.csv", col_names = c("gt", "bio")) %>%
-  mutate(index = row_number()) %>%
-  bind_cols(ti_dk1[1:168, 4]) %>%
-  bind_cols(ti_dk1[1:168, 5:6]) %>%
-  mutate(wind_total = (OnshoreWindPower + OffshoreWindPower) * 0.6374) %>%
-  mutate(demand = TotalLoad) %>%
-  bind_cols(ti_wind_u) %>%
-  select(index, demand, wind_total, u, gt, bio)
+  ti <-
+    read_csv(str_file_result, col_names = c("gt", "bio")) %>%
+    mutate(index = row_number()) %>%
+    bind_cols(ti_dk1[1:168, 4]) %>%
+    bind_cols(ti_dk1[1:168, 5:6]) %>%
+    mutate(wind_total = (OnshoreWindPower + OffshoreWindPower) * z) %>%
+    mutate(demand = TotalLoad) %>%
+    bind_cols(ti_wind_u) %>%
+    select(index, demand, wind_total, u, gt, bio)
+  
+  return(ti)
+}
 
-y_gt <- 181.8006
-y_bio <- 2473.4825
-ti_2 %>% 
-  mutate(wind_net = demand + u - gt - bio) %>%
-  gather(-index, key = "whi", value = "power") %>%
-  ggplot() + 
-    geom_line(mapping = aes(x = index, y = power, color = whi)) +
-    geom_hline(yintercept = y_gt, color = "grey", linetype = "dashed") +
-    geom_hline(yintercept = y_gt * 0.23, color = "grey", linetype = "dashed") +
-    geom_hline(yintercept = y_bio, color = "grey", linetype = "dashed") +
-    geom_hline(yintercept = y_bio * 0.5, color = "grey", linetype = "dashed") +
-    labs(
-      title = "Demand, Wind Power, GT Dispatch, Bio Dispatch",
-      x = "Time Index", y = "Power (MW)"
-      )
+
+plot_dispatch_ev <- function(ti, y_gt, y_bio){
+  ti %>% 
+    mutate(wind_net = demand + u - gt - bio) %>%
+    gather(-index, key = "whi", value = "power") %>%
+    ggplot() + 
+      geom_line(mapping = aes(x = index, y = power, color = whi)) +
+      geom_hline(yintercept = y_gt, color = "grey", linetype = "dashed") +
+      geom_text(aes(0, y_gt, label = y_gt), size = 3) + 
+      geom_hline(
+        yintercept = y_gt * 0.23, color = "grey", linetype = "dashed"
+        ) +
+      geom_text(aes(0, y_gt * 0.23, label = y_gt * 0.23), size = 3) + 
+      geom_hline(yintercept = y_bio, color = "grey", linetype = "dashed") +
+      geom_text(aes(0, y_bio, label = y_bio), size = 3) + 
+      geom_hline(
+        yintercept = y_bio * 0.5, color = "grey", linetype = "dashed"
+        ) +
+      geom_text(aes(0,  y_bio * 0.5, label =  y_bio * 0.5), size = 3) + 
+      labs(
+        title = "Demand, Wind Power, GT Dispatch, Bio Dispatch",
+        x = "Time Index", y = "Power (MW)"
+        )
+}
+```
+
+
+# 1, Results from Default Data (without Subsidy)
+
+## 1.1, Model 1 (without BEVs)
+
+```{r, message=FALSE, fig.asp = 9/16, fig.width = 5}
+ti_1 <- 
+  get_result_dispatch("./results/without-subsidy/mat_x_result_1.csv", 1)
+
+ti_1 %>% 
+  plot_dispatch(2734.75, 0.0)
+```
+
+## 1.2, Model 2 (with BEVs)
+
+```{r, message=FALSE, fig.asp = 9/16, fig.width = 5}
+ti_2 <- 
+  get_result_dispatch_ev("./results/without-subsidy/mat_wind_u.csv",
+    "./results/without-subsidy/mat_x_result_2.csv", 1)
+
+ti_2 %>%
+  plot_dispatch_ev(2565.3513, 0.0) 
+```
+
+# 2, Results from Modified Data (with Subsidy)
+
+## 2.1, Model 1 (without BEVs)
+
+```{r, message=FALSE, fig.asp = 9/16, fig.width = 5}
+ti_3 <- 
+  get_result_dispatch("./results/subsidy/mat_x_result_1.csv", 0.6249)
+
+ti_3 %>% 
+  plot_dispatch(1051.1959, 1802.1468)
+```
+
+Difference between total and net wind power output is the curtailed wind power.
+
+## 2.2, Model 2 (with BEVs)
+
+```{r, message=FALSE, fig.asp = 9/16, fig.width = 5}
+ti_4 <- 
+  get_result_dispatch_ev("./results/subsidy/mat_wind_u.csv",
+    "./results/subsidy/mat_x_result_2.csv", 0.6242)
+
+ti_4 %>%
+  plot_dispatch_ev(707.9714, 1950.5787) 
 ```
 
 `u` is the average charging or discharging speed.

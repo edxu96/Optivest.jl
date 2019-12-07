@@ -3,8 +3,36 @@
 ## Dec 6th, 2019
 
 
-"Get the default data in the optimization"
-function get_data(num_unit)
+function print_input(c_fix_wind, vec_c_fix, vec_c_var, vec_ramp_rate_max,
+        vec_min_rate, vec_eta_plus, vec_eta_minus, vec_u_plus_max,
+        vec_u_minus_max, vec_l_min, vec_l_max, str_name_dataset)
+
+    dict_input = Dict(
+        "c_fix_wind" => c_fix_wind,
+        "c_fix_gt" => vec_c_fix[1],
+        "c_fix_bio" => vec_c_fix[2],
+        "c_var_gt" => vec_c_var[1],
+        "c_var_bio" => vec_c_var[2],
+        "ramp_rate_max_gt" => vec_ramp_rate_max[1],
+        "ramp_rate_max_bio" => vec_ramp_rate_max[2],
+        "min_rate_gt" => vec_min_rate[1],
+        "min_rate_bio" => vec_min_rate[2],
+        "eta_plus" => vec_eta_plus[1],
+        "eta_minus" => vec_eta_minus[1],
+        "u_plus_max" => vec_u_plus_max[1],
+        "u_minus_max" => vec_u_minus_max[1],
+        "l_min" => vec_l_min[1],
+        "l_max" => vec_l_max[1]
+        )
+
+    println("Dataset " * str_name_dataset * " is the input.")
+    pretty_table(DataFrame(Name = [i for i in keys(dict_input)],
+        Value = [i for i in values(dict_input)]))
+end
+
+
+"Get the dataset with subsidies in the optimization"
+function get_data_subsidy(num_unit)
     ## Data for wind output and demand
     df_dk1 = CSV.read("./data/Electricity-Dispatch_DK1.csv")[1:(num_unit+1), 1:9]
     vec_demand = df_dk1[1:num_unit, :TotalLoad]
@@ -20,10 +48,10 @@ function get_data(num_unit)
 
     ## Investment cost of different generation technologies
     vec_c_fix = [441, 800] ./ 20 # [441, 2541] ./ 20
-    c_fix_wind = 1000000 / 20 # !!! Cost of percent 8000000 * 50
+    c_fix_wind = 52000000 / 20 # !!! Cost of percent 8000000 * 50
 
     ##
-    vec_c_var = [0.4, 0.2] # [0.4, 0.433]
+    vec_c_var = [0.5, 0.433] # [0.4, 0.433]
     vec_ramp_rate_max = [1, 0.6]
     vec_min_rate = [0.23, 0.5]  # [0.5, 0.3]
     ## emission cost 25
@@ -47,6 +75,10 @@ function get_data(num_unit)
         mat_demand_weekday, mat_demand_weekday, mat_demand_weekday,
         mat_demand_weekend, mat_demand_weekend, makeunique = true)
 
+    print_input(c_fix_wind, vec_c_fix, vec_c_var, vec_ramp_rate_max,
+        vec_min_rate, vec_eta_plus, vec_eta_minus, vec_u_plus_max,
+        vec_u_minus_max, vec_l_min, vec_l_max, "with-subsidies")
+
     return vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var,
         vec_ramp_rate_max, vec_min_rate, vec_eta_plus, vec_eta_minus,
         vec_u_plus_max, vec_u_minus_max, vec_l_min, vec_l_max, vec_num,
@@ -54,52 +86,56 @@ function get_data(num_unit)
 end
 
 
-# "Get the default data in the optimization"
-# function get_data(num_unit)
-#     ## Data for wind output and demand
-#     df_dk1 = CSV.read("./data/Electricity-Dispatch_DK1.csv")[1:(num_unit+1), 1:9]
-#     vec_demand = df_dk1[1:num_unit, :TotalLoad]
-#     vec_wind = df_dk1[1:num_unit, 5] + df_dk1[1:num_unit, 6]
-#     for i in 2:(num_unit - 1)
-#         if isequal(vec_demand[i], missing)
-#             vec_demand[i] = (vec_demand[i+1] + vec_demand[i-1]) / 2
-#         end
-#         if isequal(vec_wind[i], missing)
-#             vec_wind[i] = (vec_wind[i+1] + vec_wind[i-1]) / 2
-#         end
-#     end
-#
-#     ## Investment cost of different generation technologies
-#     vec_c_fix = [441, 2541] ./ 20
-#     c_fix_wind = 1000000 / 20 # !!! Cost of percent 8000000 * 50
-#
-#     ##
-#     vec_c_var = [0.4, 0.433]
-#     vec_ramp_rate_max = [1, 0.6]
-#     vec_min_rate = [0.23, 0.5]  # [0.5, 0.3]
-#     ## emission cost 25
-#
-#     ## Data for EVs
-#     vec_eta_plus = repeat([0.94], 20)
-#     vec_eta_minus = repeat([0.886], 20)  # 0.086
-#     vec_u_plus_max = repeat([0.035], 20)  # 0.05
-#     vec_u_minus_max = repeat([0.14], 20)
-#     vec_l_min = repeat([0.0028], 20)
-#     vec_l_max = repeat([0.07], 20)
-#     vec_num = [28, 66, 68, 143, 160, 174, 188, 213, 227, 242, 244, 256, 303,
-#         360, 368, 428, 471, 472, 526, 1102]
-#
-#     ## Data for driving patterns
-#     mat_demand_weekend =
-#         CSV.read("./data/demand-EV_weekend.csv")[1:20, 1:24] .* 0.0001666
-#     mat_demand_weekday =
-#         CSV.read("./data/demand-EV_weekday.csv")[1:20, 1:24] .* 0.0001666
-#     mat_demand_ev = hcat(mat_demand_weekday, mat_demand_weekday,
-#         mat_demand_weekday, mat_demand_weekday, mat_demand_weekday,
-#         mat_demand_weekend, mat_demand_weekend, makeunique = true)
-#
-#     return vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var,
-#         vec_ramp_rate_max, vec_min_rate, vec_eta_plus, vec_eta_minus,
-#         vec_u_plus_max, vec_u_minus_max, vec_l_min, vec_l_max, vec_num,
-#         mat_demand_ev
-# end
+"Get the default data in the optimization"
+function get_data_default(num_unit)
+    ## Data for wind output and demand
+    df_dk1 = CSV.read("./data/Electricity-Dispatch_DK1.csv")[1:(num_unit+1), 1:9]
+    vec_demand = df_dk1[1:num_unit, :TotalLoad]
+    vec_wind = df_dk1[1:num_unit, 5] + df_dk1[1:num_unit, 6]
+    for i in 2:(num_unit - 1)
+        if isequal(vec_demand[i], missing)
+            vec_demand[i] = (vec_demand[i+1] + vec_demand[i-1]) / 2
+        end
+        if isequal(vec_wind[i], missing)
+            vec_wind[i] = (vec_wind[i+1] + vec_wind[i-1]) / 2
+        end
+    end
+
+    ## Investment cost of different generation technologies
+    vec_c_fix = [441, 2541] ./ 20
+    c_fix_wind = 1000000 / 20 # !!! Cost of percent 8000000 * 50
+
+    ##
+    vec_c_var = [0.4, 0.433]
+    vec_ramp_rate_max = [1, 0.6]
+    vec_min_rate = [0.23, 0.5]  # [0.5, 0.3]
+    ## emission cost 25
+
+    ## Data for EVs
+    vec_eta_plus = repeat([0.94], 20)
+    vec_eta_minus = repeat([0.886], 20)  # 0.086
+    vec_u_plus_max = repeat([0.035], 20)  # 0.05
+    vec_u_minus_max = repeat([0.14], 20)
+    vec_l_min = repeat([0.0028], 20)
+    vec_l_max = repeat([0.07], 20)
+    vec_num = [28, 66, 68, 143, 160, 174, 188, 213, 227, 242, 244, 256, 303,
+        360, 368, 428, 471, 472, 526, 1102]
+
+    ## Data for driving patterns
+    mat_demand_weekend =
+        CSV.read("./data/demand-EV_weekend.csv")[1:20, 1:24] .* 0.0001666
+    mat_demand_weekday =
+        CSV.read("./data/demand-EV_weekday.csv")[1:20, 1:24] .* 0.0001666
+    mat_demand_ev = hcat(mat_demand_weekday, mat_demand_weekday,
+        mat_demand_weekday, mat_demand_weekday, mat_demand_weekday,
+        mat_demand_weekend, mat_demand_weekend, makeunique = true)
+
+    print_input(c_fix_wind, vec_c_fix, vec_c_var, vec_ramp_rate_max,
+        vec_min_rate, vec_eta_plus, vec_eta_minus, vec_u_plus_max,
+        vec_u_minus_max, vec_l_min, vec_l_max, "default")
+
+    return vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var,
+        vec_ramp_rate_max, vec_min_rate, vec_eta_plus, vec_eta_minus,
+        vec_u_plus_max, vec_u_minus_max, vec_l_min, vec_l_max, vec_num,
+        mat_demand_ev
+end

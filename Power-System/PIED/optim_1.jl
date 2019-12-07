@@ -14,7 +14,7 @@ function get_result_optim_mod_1(vec_wind, vec_demand, num_unit, model, vec_y,
     vec_wind_net = vec_demand - mat_x_result'[:, 1] - mat_x_result'[:, 2]
 
     ## Calculate the average wind_curtail over the year
-    wind_curtail = sum(vec_wind - vec_wind_net) / num_unit * 365
+    wind_curtail = sum(vec_wind - vec_wind_net) / num_unit * 365 * 24
 
     return obj_result, vec_y_result, z_result, wind_curtail, mat_x_result
 end
@@ -46,7 +46,7 @@ function optim_mod_1(
 
     @objective(model, Min,
         sum(mat_x[i, t] * vec_c_var[i] for i = 1:2, t = 1:num_unit) /
-        num_unit * 365 + sum(vec_y[i] * vec_c_fix[i] for i = 1:2) +
+        num_unit * 365 * 24 + sum(vec_y[i] * vec_c_fix[i] for i = 1:2) +
         c_fix_wind * z
         )
     @constraint(model, mat_cons_1[j = 1:2, t = 1:(num_unit - 1)],

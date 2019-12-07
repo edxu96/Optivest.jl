@@ -54,10 +54,14 @@ function main()
 
     ## Get the default data
     num_unit = 168  # 168
+    # vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var,
+    #     vec_ramp_rate_max, vec_min_rate, vec_eta_plus, vec_eta_minus,
+    #     vec_u_plus_max, vec_u_minus_max, vec_l_min, vec_l_max, vec_num,
+    #     mat_demand_ev = get_data_default(num_unit)
     vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var,
         vec_ramp_rate_max, vec_min_rate, vec_eta_plus, vec_eta_minus,
         vec_u_plus_max, vec_u_minus_max, vec_l_min, vec_l_max, vec_num,
-        mat_demand_ev = get_data(num_unit)
+        mat_demand_ev = get_data_subsidy(num_unit)
 
     ## Optimize using default data
     wind_curtail_1, wind_curtail_2 = optim(vec_demand,
