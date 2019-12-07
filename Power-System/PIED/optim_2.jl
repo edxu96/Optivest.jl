@@ -36,22 +36,22 @@ end
 
 
 "Export the results from model 2 to CSV files."
-function export_result_mod_2(name_para, para, mat_x_result, vec_u_result,
+function export_result_mod_2(mat_x_result, vec_u_result,
         mat_l_result, vec_result, vec_wind_net)
     CSV.write(
-        "./results/" * name_para * "-" * string(para) * "/mat_x_result_2.csv",
+        "./results/mat_x_result_2.csv",
         DataFrame(mat_x_result'), writeheader = false
         )
     CSV.write(
-        "./results/" * name_para * "-" * string(para) * "/mat_l_result.csv",
+        "./results/mat_l_result.csv",
         DataFrame(mat_l_result'), writeheader = false
         )
     CSV.write(
-        "./results/" * name_para * "-" * string(para) * "/vec_result_2.csv",
+        "./results/vec_result_2.csv",
         DataFrame(vec_result), writeheader = false
         )
     CSV.write(
-        "./results/" * name_para * "-" * string(para) * "/mat_wind_u.csv",
+        "./results/mat_wind_u.csv",
         DataFrame(wind_net = vec_wind_net, charging = vec_u_result),
         writeheader = false
         )
@@ -135,9 +135,10 @@ function optim_mod_2(
     if whe_print_result
         pretty_table(vec_result, ["y_gt" "y_bio" "z" "obj" "curtail"];
             formatter = ft_round(4))
-        export_result_mod_2("c_fix_wind", 1000000, mat_x_result, vec_u_result,
-            mat_l_result, vec_result, vec_wind_net)
+        export_result_mod_2(mat_x_result, vec_u_result, mat_l_result,
+            vec_result, vec_wind_net)
     end
 
+    println(vec_result)
     return vec_result
 end
