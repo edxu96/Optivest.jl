@@ -40,6 +40,8 @@ function analyze_sensitivity(vec_sensible, whi_sensible, whe_subsidy,
         push!(["obj", vec_result_1[4], i, whe_subsidy, true])
         push!(["curtail", vec_result_1[5], i, whe_subsidy, true])
     end
+
+    return df_result
 end
 
 
@@ -73,13 +75,15 @@ function main()
         get_data(whe_subsidy)
 
     ##
-    optim(dict_input, vec_demand, vec_wind, vec_num, mat_demand_ev, num_unit)
+    # optim(dict_input, vec_demand, vec_wind, vec_num, mat_demand_ev, num_unit)
 
     ## Sensitity Analysis
-    # vec_sensible = []
-    # whi_sensible = "c_fix_wind"
-    # analyze_sensitivity(vec_sensible, whi_sensible, whe_subsidy, dict_input,
-    #     vec_demand, vec_wind, vec_num, mat_demand_ev, num_unit)
+    vec_sensible = [52000000] ./ 20
+    whi_sensible = "c_fix_wind"
+    df_result = analyze_sensitivity(vec_sensible, whi_sensible, whe_subsidy,
+        dict_input, vec_demand, vec_wind, vec_num, mat_demand_ev, num_unit)
+
+    pretty_table(df_result)
 
     println("#### Done ####")
 end
