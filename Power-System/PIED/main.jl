@@ -91,8 +91,8 @@ function main()
     println("#### Start ####")
 
     ## Get the default data
-    num_unit = 360 * 24  # 168 360 * 24
-    whe_subsidy = true
+    num_unit = 7 * 24  # 168 360 * 24
+    whe_subsidy = false
 
     ## Get the data
     dict_input, vec_demand, vec_wind, vec_num, mat_demand_ev =

@@ -92,6 +92,7 @@ function get_data_default(num_unit)
     ## Investment cost of different generation technologies
     vec_c_fix = [441, 2541] ./ 20
     c_fix_wind = 1000000 / 20 # !!! Cost of percent 8000000 * 50
+    # c_fix_wind =  7600000000 / 20
 
     ##
     vec_c_var = [0.4, 0.433]
