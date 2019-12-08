@@ -71,7 +71,7 @@ function optim_mod_2(
         )
     vec_num = vec_num * scale_fleet
 
-    model = Model(with_optimizer(CPLEX.Optimizer, CPX_PARAM_SCRIND = 0))
+    model = Model(with_optimizer(CPLEX.Optimizer, CPX_PARAM_SCRIND = 1))
     @variable(model, mat_x[1:2, 1:num_unit] >= 0)
     @variable(model, vec_y[1:2] >= 0)
     @variable(model, 0 <= z <= 1)

@@ -172,8 +172,8 @@ function get_data_for_model(dict_input)
     scale_fleet = dict_input["scale_fleet"]
 
     vec_eta_plus = repeat([dict_input["eta_plus"]], 20)
-    vec_eta_minus = repeat([dict_input["eta_minus"]], 20)  # 0.086
-    vec_u_plus_max = repeat([dict_input["u_plus_max"]], 20)  # 0.05
+    vec_eta_minus = repeat([dict_input["eta_minus"]], 20)
+    vec_u_plus_max = repeat([dict_input["u_plus_max"]], 20) 
     vec_u_minus_max = repeat([dict_input["u_minus_max"]], 20)
     vec_l_min = repeat([dict_input["l_min"]], 20)
     vec_l_max = repeat([dict_input["l_max"]], 20)

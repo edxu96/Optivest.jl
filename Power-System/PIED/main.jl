@@ -92,7 +92,7 @@ function main()
 
     ## Get the default data
     num_unit = 7 * 24  # 168 360 * 24
-    whe_subsidy = false
+    whe_subsidy = true
 
     ## Get the data
     dict_input, vec_demand, vec_wind, vec_num, mat_demand_ev =
