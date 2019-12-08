@@ -115,6 +115,8 @@ get_result_dispatch_ev <- function(str_file_wind_u, str_file_result, z){
 plot_dispatch_ev <- function(ti, y_gt, y_bio){
   ti %>% 
     mutate(wind_net = demand + u - gt - bio) %>%
+    mutate(u = -u) %>%
+    mutate(demand = -demand) %>%
     gather(-index, key = "whi", value = "power") %>%
     ggplot() + 
       geom_line(mapping = aes(x = index, y = power, color = whi)) +
@@ -136,7 +138,6 @@ plot_dispatch_ev <- function(ti, y_gt, y_bio){
         )
 }
 ```
-
 
 # 1, Results from Default Data (without Subsidy)
 
