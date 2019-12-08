@@ -4,8 +4,8 @@
 
 
 "Get the optimized results from model 2."
-function get_result_optim_mod_2(vec_wind, vec_demand, num_unit, vec_num, model,
-        vec_y, z, mat_x, mat_u_plus, mat_u_minus, mat_l)
+function get_result_optim_mod_2(vec_wind, vec_demand, num_unit, model,
+        vec_y, z, mat_x, mat_u_plus, mat_u_minus, mat_l, scale_fleet)
     obj_result = objective_value(model)
     vec_y_result = value_vec(vec_y)
     z_result = value(z)
@@ -22,7 +22,8 @@ function get_result_optim_mod_2(vec_wind, vec_demand, num_unit, vec_num, model,
     ## Aggregate the charging and discharing
     vec_u_result = zeros(length(vec_demand))
     for t = 1:num_unit
-        vec_u_result[t] = sum(mat_u_result[t, i] * vec_num[i] for i = 1:20)
+        vec_u_result[t] = sum(mat_u_result[t, i] * scale_fleet for
+            i = 1:20)
     end
 
     ## Calculate the average wind_curtail over the year
@@ -66,8 +67,10 @@ function optim_mod_2(
         vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var,
         vec_ramp_rate_max, vec_min_rate, vec_eta_plus, vec_eta_minus,
         vec_u_plus_max, vec_u_minus_max, vec_l_min, vec_l_max, vec_num,
-        mat_demand_ev, num_unit, whe_print_result
+        mat_demand_ev, num_unit, whe_print_result, scale_fleet
         )
+    vec_num = vec_num * scale_fleet
+
     model = Model(with_optimizer(CPLEX.Optimizer, CPX_PARAM_SCRIND = 0))
     @variable(model, mat_x[1:2, 1:num_unit] >= 0)
     @variable(model, vec_y[1:2] >= 0)
@@ -128,8 +131,8 @@ function optim_mod_2(
     optimize!(model)
 
     vec_result, mat_x_result, vec_wind_net, vec_u_result, mat_l_result =
-        get_result_optim_mod_2(vec_wind, vec_demand, num_unit, vec_num, model,
-        vec_y, z, mat_x, mat_u_plus, mat_u_minus, mat_l)
+        get_result_optim_mod_2(vec_wind, vec_demand, num_unit, model,
+        vec_y, z, mat_x, mat_u_plus, mat_u_minus, mat_l, scale_fleet)
 
     if whe_print_result
         pretty_table(vec_result, ["y_gt" "y_bio" "z" "obj" "curtail"];

@@ -26,7 +26,7 @@ knitr::opts_chunk$set(
   comment = "#>",
   fig.align = "center",
   fig.asp = 9/16,
-  fig.width = 8,
+  fig.width = 5,
   warning = FALSE,
   message = FALSE
 )
@@ -142,7 +142,7 @@ plot_dispatch_ev <- function(ti, y_gt, y_bio){
 
 ## 1.1, Model 1 (without BEVs)
 
-```{r, message=FALSE, fig.asp = 9/16, fig.width = 8}
+```{r, message=FALSE, fig.asp = 9/16, fig.width = 5}
 ti_1 <- 
   get_result_dispatch("./results/without-subsidy/mat_x_result_1.csv", 1)
 
@@ -152,7 +152,7 @@ ti_1 %>%
 
 ## 1.2, Model 2 (with BEVs)
 
-```{r, message=FALSE, error=FALSE, fig.asp = 9/16, fig.width = 8}
+```{r, message=FALSE, error=FALSE, fig.asp = 9/16, fig.width = 5}
 ti_2 <- 
   get_result_dispatch_ev("./results/without-subsidy/mat_wind_u.csv",
     "./results/without-subsidy/mat_x_result_2.csv", 1)
@@ -165,7 +165,7 @@ ti_2 %>%
 
 ## 2.1, Model 1 (without BEVs)
 
-```{r, message=FALSE, fig.asp = 9/16, fig.width = 8}
+```{r, message=FALSE, fig.asp = 9/16, fig.width = 5}
 ti_3 <- 
   get_result_dispatch("./results/subsidy/mat_x_result_1.csv", 0.6249)
 
@@ -177,7 +177,7 @@ Difference between total and net wind power output is the curtailed wind power.
 
 ## 2.2, Model 2 (with BEVs)
 
-```{r, message=FALSE, fig.asp = 9/16, fig.width = 8}
+```{r, message=FALSE, fig.asp = 9/16, fig.width = 5}
 ti_4 <- 
   get_result_dispatch_ev("./results/subsidy/mat_wind_u.csv",
     "./results/subsidy/mat_x_result_2.csv", 0.6242)
@@ -191,32 +191,145 @@ ti_4 %>%
 # Sensitivity Analysis with Subsidized Data
 
 ```{r, message=FALSE}
-ti_sensitivity <- 
+ti_sense_c_fix_wind <- 
   read_csv(
     "./results/df_result_sensitivity_c_fix_wind.csv", 
     col_names = c("name", "value", "sensitivity", "whe_sub", "whe_ev")
     )
 ```
 
-```{r, message=FALSE, fig.asp = 9/16, fig.width = 8}
-ti_sensitivity %>%
+```{r, message=FALSE, fig.asp = 9/16, fig.width = 5}
+ti_sense_c_fix_wind %>%
   filter(whe_ev == F) %>%
   # filter(name == "obj") %>%
   ggplot() + 
     geom_line(mapping = aes(x = sensitivity, y = value)) +
     facet_grid(rows = vars(name), scales = "free") +
     labs(x = "Fixed Cost of Wind (DKK / %)", y = "Value",
-         title = "Sensitivity of Fixed Cost of Wind in Model 1")
+      title = "Sensitivity of Model without BEVs to Fixed Cost of Wind",
+      subtitle = paste("Blue lines indicate the original fixed",
+      "cost of wind, which is 2600000 DKK / %.")) +
+    scale_x_continuous(sec.axis = dup_axis(name = "Variation Scale (%)", 
+      ~ . / 52000000 * 20 * 100 - 100)) +
+    geom_vline(xintercept = 52000000 / 20, color = "blue")
+    
 ```
 
-```{r, message=FALSE, fig.asp = 9/16, fig.width = 8}
-ti_sensitivity %>%
+```{r, message=FALSE, fig.asp = 9/16, fig.width = 5}
+ti_sense_c_fix_wind %>%
+  filter(whe_ev == T) %>%
+  ggplot() + 
+    geom_line(mapping = aes(x = sensitivity, y = value)) +
+    facet_grid(rows = vars(name), scales = "free") +
+    labs(x = "Fixed Cost of Wind (DKK / %)", y = "Value",
+      title = "Sensitivity of Model with BEVs to Fixed Cost of Wind",
+      subtitle = paste("Blue lines indicate the original fixed",
+      "cost of wind, which is 2600000 DKK / %.")) +
+    scale_x_continuous(sec.axis = dup_axis(name = "Variation Scale (%)", 
+      ~ . / 52000000 * 20 * 100 - 100)) +
+    geom_vline(xintercept = 52000000 / 20, color = "blue")
+```
+
+```{r, message=FALSE}
+ti_sense_c_var_gt <- 
+  read_csv(
+    "./results/df_result_sensitivity_c_var_gt.csv", 
+    col_names = c("name", "value", "sensitivity", "whe_sub", "whe_ev")
+    )
+```
+
+```{r, message=FALSE, fig.asp = 9/16, fig.width = 5}
+ti_sense_c_var_gt %>%
+  filter(whe_ev == F) %>%
+  # filter(name == "obj") %>%
+  ggplot() + 
+    geom_line(mapping = aes(x = sensitivity, y = value)) +
+    facet_grid(rows = vars(name), scales = "free") +
+    labs(x = "Variable Cost of GT (DKK / MW)", y = "Value",
+      title = "Sensitivity of Model without BEVs to Variable Cost of GT",
+      subtitle = paste("Blue lines indicate the original variable cost of GT,",
+      "which is 0.5 DKK / MW.")) +
+    scale_x_continuous(sec.axis = dup_axis(name = "Variation Scale (%)", 
+      ~ . / 0.5 * 100 - 100)) +
+    geom_vline(xintercept = 0.5, color = "blue")
+```
+
+```{r, message=FALSE, fig.asp = 9/16, fig.width = 5}
+ti_sense_c_var_gt %>%
   filter(whe_ev == T) %>%
   # filter(name == "obj") %>%
   ggplot() + 
     geom_line(mapping = aes(x = sensitivity, y = value)) +
     facet_grid(rows = vars(name), scales = "free") +
-    labs(x = "Fixed Cost of Wind (DKK / %)", y = "Value",
-         title = "Sensitivity of Fixed Cost of Wind in Model 2")
+    labs(x = "Variable Cost of GT (DKK / MW)", y = "Value",
+      title = "Sensitivity of Model with BEVs to Variable Cost of GT",
+      subtitle = paste("Blue lines indicate the original variable cost of GT,",
+      "which is 0.5 DKK / MW.")) +
+    scale_x_continuous(sec.axis = dup_axis(name = "Variation Scale (%)", 
+      ~ . / 0.5 * 100 - 100)) +
+    geom_vline(xintercept = 0.5, color = "blue")
 ```
+
+```{r, message=FALSE}
+ti_sense_c_var_bio <- 
+  read_csv(
+    "./results/df_result_sensitivity_c_var_bio.csv", 
+    col_names = c("name", "value", "sensitivity", "whe_sub", "whe_ev")
+    )
+```
+
+```{r, message=FALSE, fig.asp = 9/16, fig.width = 5}
+ti_sense_c_var_bio %>%
+  filter(whe_ev == F) %>%
+  # filter(name == "obj") %>%
+  ggplot() + 
+    geom_line(mapping = aes(x = sensitivity, y = value)) +
+    facet_grid(rows = vars(name), scales = "free") +
+    labs(x = "Variable Cost of Bio (DKK / MW)", y = "Value",
+      title = "Sensitivity of Model without BEVs to Variable Cost of Bio",
+      subtitle = paste("Blue lines indicate the original variable cost of Bio,",
+      "which is 0.433 DKK / MW.")) +
+    scale_x_continuous(sec.axis = dup_axis(name = "Variation Scale (%)", 
+      ~ . / 0.433 * 100 - 100)) +
+    geom_vline(xintercept = 0.433, color = "blue")
+```
+
+```{r, message=FALSE, fig.asp = 9/16, fig.width = 5}
+ti_sense_c_var_bio %>%
+  filter(whe_ev == T) %>%
+  # filter(name == "obj") %>%
+  ggplot() + 
+    geom_line(mapping = aes(x = sensitivity, y = value)) +
+    facet_grid(rows = vars(name), scales = "free") +
+    labs(x = "Variable Cost of Bio (DKK / MW)", y = "Value",
+      title = "Sensitivity of Model with BEVs to Variable Cost of Bio",
+      subtitle = paste("Blue lines indicate the original variable cost of Bio,",
+      "which is 0.433 DKK / MW.")) +
+    scale_x_continuous(sec.axis = dup_axis(name = "Variation Scale (%)", 
+      ~ . / 0.433 * 100 - 100)) +
+    geom_vline(xintercept = 0.433, color = "blue")
+```
+
+```{r, message=FALSE}
+ti_sense_scale_fleet <- 
+  read_csv(
+    "./results/df_result_sensitivity_scale_fleet.csv", 
+    col_names = c("name", "value", "sensitivity", "whe_sub", "whe_ev")
+    )
+```
+
+```{r, message=FALSE, fig.asp = 9/16, fig.width = 5}
+ti_sense_scale_fleet %>%
+  filter(whe_ev == T) %>%
+  # filter(name == "obj") %>%
+  ggplot() + 
+    geom_line(mapping = aes(x = sensitivity, y = value)) +
+    facet_grid(rows = vars(name), scales = "free") +
+    labs(x = "Scale of BEVs Fleet", y = "Value",
+      title = "Sensitivity of Model with BEVs to Scale of BEVs Fleet",
+      subtitle = paste("Blue lines indicate the original scale of BEVs fleet,",
+      "which is 1.")) +
+    geom_vline(xintercept = 1, color = "blue")
+```
+
 

@@ -48,8 +48,9 @@ function get_data_ev(num_unit)
     mat_demand_ev = repeat(mat_demand_ev, 1, convert(Int64,
         floor(num_unit / 168) + 1))
     mat_demand_ev = mat_demand_ev[:, 1:num_unit]
+    scale_fleet = 1  # To enlarge or shrink the number of BEVs
 
-    return vec_num, mat_demand_ev
+    return vec_num, mat_demand_ev, scale_fleet
 end
 
 
@@ -75,12 +76,12 @@ function get_data_subsidy(num_unit)
     vec_l_max = repeat([0.07], 20)
 
     ## Get the data for electric vehicles
-    vec_num, mat_demand_ev = get_data_ev(num_unit)
+    vec_num, mat_demand_ev, scale_fleet = get_data_ev(num_unit)
 
     return vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var,
         vec_ramp_rate_max, vec_min_rate, vec_eta_plus, vec_eta_minus,
         vec_u_plus_max, vec_u_minus_max, vec_l_min, vec_l_max, vec_num,
-        mat_demand_ev
+        mat_demand_ev, scale_fleet
 end
 
 
@@ -98,12 +99,20 @@ function get_data_default(num_unit)
     vec_min_rate = [0.23, 0.5]  # [0.5, 0.3]
     ## emission cost 25
 
-    vec_num, mat_demand_ev = get_data_ev(num_unit)
+    ## Data for EVs
+    vec_eta_plus = repeat([0.94], 20)
+    vec_eta_minus = repeat([0.886], 20)  # 0.086
+    vec_u_plus_max = repeat([0.035], 20)  # 0.05
+    vec_u_minus_max = repeat([0.14], 20)
+    vec_l_min = repeat([0.0028], 20)
+    vec_l_max = repeat([0.07], 20)
+
+    vec_num, mat_demand_ev, scale_fleet = get_data_ev(num_unit)
 
     return vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var,
         vec_ramp_rate_max, vec_min_rate, vec_eta_plus, vec_eta_minus,
         vec_u_plus_max, vec_u_minus_max, vec_l_min, vec_l_max, vec_num,
-        mat_demand_ev
+        mat_demand_ev, scale_fleet
 end
 
 
@@ -114,13 +123,13 @@ function get_data(whe_subsidy, num_unit)
         vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var,
             vec_ramp_rate_max, vec_min_rate, vec_eta_plus, vec_eta_minus,
             vec_u_plus_max, vec_u_minus_max, vec_l_min, vec_l_max, vec_num,
-            mat_demand_ev = get_data_subsidy(num_unit)
+            mat_demand_ev, scale_fleet = get_data_subsidy(num_unit)
     else
         println("Data without subsidy is the input.")
         vec_demand, vec_wind, vec_c_fix, c_fix_wind, vec_c_var,
             vec_ramp_rate_max, vec_min_rate, vec_eta_plus, vec_eta_minus,
             vec_u_plus_max, vec_u_minus_max, vec_l_min, vec_l_max, vec_num,
-            mat_demand_ev = get_data_default(num_unit)
+            mat_demand_ev, scale_fleet = get_data_default(num_unit)
     end
 
     ##
@@ -140,7 +149,8 @@ function get_data(whe_subsidy, num_unit)
         "u_minus_max" => vec_u_minus_max[1],
         "l_min" => vec_l_min[1],
         "l_max" => vec_l_max[1],
-        "num_unit" => num_unit
+        "num_unit" => num_unit,
+        "scale_fleet" => scale_fleet
         )
     pretty_table(DataFrame(Name = [i for i in keys(dict_input)],
         Value = [i for i in values(dict_input)]))
@@ -158,6 +168,7 @@ function get_data_for_model(dict_input)
     vec_ramp_rate_max = [dict_input["ramp_rate_max_gt"],
         dict_input["ramp_rate_max_bio"]]
     vec_min_rate = [dict_input["min_rate_gt"], dict_input["min_rate_bio"]]
+    scale_fleet = dict_input["scale_fleet"]
 
     vec_eta_plus = repeat([dict_input["eta_plus"]], 20)
     vec_eta_minus = repeat([dict_input["eta_minus"]], 20)  # 0.086
@@ -168,5 +179,5 @@ function get_data_for_model(dict_input)
 
     return vec_c_fix, c_fix_wind, vec_c_var, vec_ramp_rate_max, vec_min_rate,
         vec_eta_plus, vec_eta_minus, vec_u_plus_max, vec_u_minus_max,
-        vec_l_min, vec_l_max
+        vec_l_min, vec_l_max, scale_fleet
 end
