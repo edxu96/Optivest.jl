@@ -1,4 +1,31 @@
 
+## 1, Introduction
+
+> As the proportion of wind and solar generation capacity increases, their intermittency and stochasticity increase the need for resources able to compensate rapidly for substantial changes in the load/generation balance. Ensuring that enough generation capacity is available to meet reliably the peak demand is no longer sufficient. Generators and other resources (such as demand response and storage) must be sufficiently flexible to respond to these changes. Flexible generating units have large ramp-up and ramp- down rates, low minimum stable generation as well as short minimum up- and down­ times. Storage typically has a fast response time but must have a large enough energy capacity to sustain this response. Demand-side resources must demonstrate their dependability. [1]
+
+
+## 3, Risk Management
+
+### Distribution of Worse Case Scenario instead of Worst Case Scenario
+
+## 4, Inter-Dependence of Multiple Stochastic Processes
+
+> Decision-making problems related to electricity markets may be affected by stochastic processes that are statistically dependent. For instance, It is well-known that electricity prices and demand are strongly interrelated in such a way that periods of high/low prices often coincide with periods of high/low demand. [2]
+
+## 5, Discrete instead of Continuous
+
+> Solving optimization problems where uncertainty on input data is modeled by continuous stochastic processes is very difficult, or even impossible in many cases. In contrast, discrete stochastic processes can be easily embedded into an optimization problem using the deterministic equivalent problem. For this reason, prior to finding the solution of a stochastic programming problem, every continuous stochastic process is to be replaced by an approximate discrete one. [2]
+
+## 6, CIED and UCC
+
+
+
+## 7, References
+
+1. Kirschen, D.S. and Strbac, G., 2018. Fundamentals of power system economics. John Wiley & Sons.
+2. Conejo, A.J., Carrión, M. and Morales, J.M., 2010. Decision making
+
+---
 # dtu42002a2: Optimal Production Investment and Economic Dispatch
 
 ## 1, without Storage
@@ -136,37 +163,6 @@ $$
 ### Simulated Forecast
 
 > In the day-ahead market, the wind forecast is simulated based on the realization of WG and the simulation of wind forecast error. The realization of WG is assumed to be the same as historical data. Wind forecast error is simulated based on a probability distribution considering the associated temporal correlation. Demand forecast is also simulated using this approach. [1]
-
-
-## 4, Analysis of Result
-
-### Wind Curtailment
-
-Comparison of wind curtailment when wind penetration is high with and without electric vehicles.
-
-### Sensitivity Analysis
-
-### Important Parameters
-
-$$
-\begin{array}{c c c}
-	\hline
-	\text{Symbol} & \text{Unit} & \text{Value} \\
-	\hline
-	a &  \text{hour} & 0.5 \\
-	c^{fix}_{1} &  \text{DKK / MW} &  \\
-	c^{fix}_{2} &  \text{DKK / MW} &  \\
-	c^{fix, wind} & \text{DKK / %} &  \\
-	c^{var}_{1} & \text{DKK / MW} & \\
-	c^{var}_{2} & \text{DKK / MW} & \\
-	s^{max}_{1} & \text{%} & \\
-	s^{max}_{2} & \text{%} & \\
-	\beta_{1} & \text{%} & \\
-	\beta_{2} & \text{%} & \\ \hline
-\end{array}
-$$
-
-_Table 7, summary of important constants_
 
 ## 5, References
 
