@@ -1,5 +1,7 @@
+# Optimal Production Investment and Economic Dispatch, DTU-42002 Assignment 2
 
-# dtu42002a2: Optimal Production Investment and Economic Dispatch
+Edward J. Xu  
+Jan 14, 2020
 
 ## 1, without Storage
 
@@ -130,13 +132,3 @@ $$
 	& u^{-}_{g, t} d^{EV}_{g, t} = 0 \quad \text{for } g \in G, t \in T \quad \text{(-)} \\
 \end{align}
 $$
-
-## 3, Data Sets
-
-### Simulated Forecast
-
-> In the day-ahead market, the wind forecast is simulated based on the realization of WG and the simulation of wind forecast error. The realization of WG is assumed to be the same as historical data. Wind forecast error is simulated based on a probability distribution considering the associated temporal correlation. Demand forecast is also simulated using this approach. [1]
-
-## 5, References
-
-1. Ma, J., Silva, V., Belhomme, R., Kirschen, D.S. and Ochoa, L.F., 2013, July. Evaluating and planning flexibility in sustainable power systems. In 2013 IEEE power & energy society general meeting (pp. 1-11). IEEE.
