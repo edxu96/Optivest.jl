@@ -12,6 +12,8 @@ The model is mostly based on the second section of
 [trine2011optimal](#reference). [bouffard2008stochastic](#reference) and
 [ortega2010assessing](#reference) are relevant as well.
 
+Remember to specify units of variables and constants.
+
 > As the proportion of wind and solar generation capacity increases, their
 > intermittency and stochasticity increase the need for resources able to
 > compensate rapidly for substantial changes in the load/generation balance.
